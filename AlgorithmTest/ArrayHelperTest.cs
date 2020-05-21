@@ -30,5 +30,20 @@ namespace AlgorithmTest
             var output = ArrayHelper.ThreeNumberSum(array, 0);
             Assert.IsNotNull(output);
         }
+
+        [TestMethod]
+        public void CheckPossibilityTest()
+        {
+            var array = new int[] { 1};
+            var output = ArrayHelper.CheckPossibility(array);
+            Assert.IsNotNull(output);
+        }
+
+        [TestMethod]
+        public void ReverseNumberTest()
+        {
+            var output = ArrayHelper.ReverseNumber(1534236469);
+            Assert.IsNotNull(output);
+        }
     }
 }
