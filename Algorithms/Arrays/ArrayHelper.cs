@@ -34,6 +34,12 @@ namespace Algorithms.Arrays
             return new int[0];
         }
 
+        /// <summary>
+        /// Returns Multiple Matches in a Array
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="targetSum"></param>
+        /// <returns></returns>
         public static List<int[]> TwoNumberSumList(int[] array, int targetSum)
         {
             Array.Sort(array);
@@ -161,6 +167,8 @@ namespace Algorithms.Arrays
             return x == reversedNumber || x == reversedNumber / 10;
         }
 
+
+        //TODO: This is work in Progress - Still have to find the solution
         /// <summary>
         /// Check for Increasing Array with One Change
         /// </summary>
@@ -230,7 +238,112 @@ namespace Algorithms.Arrays
             return thirdmax.GetValueOrDefault();
         }
 
+        public static int FindPivotIndex(int[] nums)
+        {
+            if (nums.Length == 0)
+            {
+                return -1;
+            }
 
+            int totalSum = 0;
+            int leftSum = 0;
+
+            foreach (var num in nums)
+            {
+                totalSum += num;
+            }
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (leftSum == totalSum - nums[i]- leftSum)
+                {
+                    return i;
+                }
+
+                leftSum += nums[i];
+            }
+
+            return -1;
+        }
+
+        public static int[] Sort012(int[] nums)
+        {
+            if (nums.Length == 0 || nums.Length == 1)
+            {
+                return nums;
+            }
+
+            int start = 0; //To keep track of 0's
+            int end = nums.Length - 1; //keep track of 2's
+            int currentIndex = 0;
+
+            while (currentIndex <= end)
+            {
+                if (nums[currentIndex] == 0)
+                {
+                    Swap(nums, start, currentIndex);
+                    start++;
+                    currentIndex++;
+                }
+                else if (nums[currentIndex] == 1)
+                {
+                    currentIndex++;
+                }
+                else
+                {
+                    Swap(nums, end, currentIndex);
+                    end--;
+                }
+            }
+
+            return nums;
+        }
+
+        public static int MajorityElement(int[] nums)
+        {
+            if (nums.Length == 0)
+            {
+                return -1;
+            }
+
+            if (nums.Length == 1)
+            {
+                return nums[0];
+            }
+
+            int targetLenght = nums.Length / 2;
+
+            Dictionary<int, int> numCountMap = new Dictionary<int, int>();
+
+            foreach (var num in nums)
+            {
+                if (numCountMap.ContainsKey(num))
+                {
+                    numCountMap[num] += 1;
+
+                    if (numCountMap[num] > targetLenght)
+                    {
+                        return num;
+                    }
+                }
+                else
+                {
+                    numCountMap.Add(num, 1);
+                }
+            }
+
+            return -1;
+
+
+        }
+
+        private static int[] Swap ( int[] input, int start, int end)
+        {
+            int temp = input[start];
+            input[start] = input[end];
+            input[end] = temp;
+            return input;
+        }
     }
 }
 

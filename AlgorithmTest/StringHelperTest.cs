@@ -16,5 +16,36 @@ namespace AlgorithmTest
             Assert.IsNotNull(output);
         }
 
+        [TestMethod]
+        public void GroupAnagramsTest()
+        {
+            var input = new List<string>
+            {
+             "yo", "act", "flop", "tac", "cat", "oy", "olfp"
+            };
+            var output = StringHelper.GroupAnagrams(input);
+            Assert.IsNotNull(output);
+        }
+
+        [TestMethod]
+        public void FindSubstringIndexTest()
+        {
+            var output = StringHelper.FindSubstringIndex("hello","ll");
+            Assert.IsNotNull(output);
+        }
+
+        [TestMethod]
+        public void FrequencySortTest()
+        {
+            var output = StringHelper.FrequencySort("tree");
+            Assert.IsNotNull(output);
+        }
+
+        [TestMethod]
+        public void NumJewelsInStonesTest()
+        {
+            var output = StringHelper.NumJewelsInStones("z","ZZ");
+            Assert.IsNotNull(output);
+        }
     }
 }
