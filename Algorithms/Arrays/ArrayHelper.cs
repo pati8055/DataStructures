@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Algorithms.Arrays
 {
@@ -337,7 +338,238 @@ namespace Algorithms.Arrays
 
         }
 
+        public static bool IsValidSubsequence(List<int> array, List<int> sequence)
+        {
+            if (array.Count == 0 || sequence.Count == 0)
+            {
+                return false;
+            }
+
+            int arrayIndex = 0, sequenceIndex = 0;
+
+            while (arrayIndex < array.Count && sequenceIndex < sequence.Count)
+            {
+               if (array[arrayIndex] == sequence[sequenceIndex])
+                {
+                   sequenceIndex++;
+                }
+                arrayIndex++;
+                
+            }
+            return sequenceIndex == sequence.Count;
+        }
+
+        public static int[] SmallestDifference(int[] arrayOne, int[] arrayTwo)
+        {
+            Array.Sort(arrayOne);
+            Array.Sort(arrayTwo);
+
+            int arrayOneIndex = 0;
+            int arrayTwoIndex = 0;
+            int smallestDiff = int.MaxValue;
+            int currentDiff = int.MaxValue;
+            int[] smallestPair = new int[2];
+
+            while (arrayOneIndex < arrayOne.Length && arrayTwoIndex < arrayTwo.Length)
+            {
+                int firstnum = arrayOne[arrayOneIndex];
+                int secondnum = arrayTwo[arrayTwoIndex];
+
+                if (firstnum < secondnum)
+                {
+                    currentDiff = secondnum - firstnum;
+                    arrayOneIndex++;
+                }
+                else if(secondnum < firstnum)
+                {
+                    currentDiff = firstnum - secondnum;
+                    arrayTwoIndex++;
+                }
+                else
+                {
+                    return new int[] { firstnum, secondnum };
+                }
+
+                if (smallestDiff > currentDiff)
+                {
+                    smallestDiff = currentDiff;
+                    smallestPair = new int[] { firstnum, secondnum };
+                }
+
+            }
+
+            return smallestPair;
+        }
+
+        public static List<int> MoveElementToEnd(List<int> array, int toMove)
+        {
+            if (array.Count == 0)
+            {
+                return new List<int>();
+            }
+            int start = 0;
+            int end = array.Count - 1;           
+
+            while (start < end)
+            {
+                if (array[end] == toMove)
+                {
+                    end--;
+                    continue;
+                }
+
+                if (array[start] == toMove)
+                {
+                    Swap(array, start, end);
+                    end--;
+                }
+                start++;
+            }
+            return array;
+        }
+
+        public static int BinarySearch(int[] array, int target)
+        {
+            if (array.Length == 0)
+            {
+                return -1;
+            }
+
+            int left = 0;
+            int right = array.Length -1;
+
+            while (left <= right)
+            {
+                int middle = (left + right) / 2;
+
+                int potentialmatch = array[middle];
+                if (potentialmatch > target)
+                {
+                    right = middle - 1;
+                }
+                else if (potentialmatch < target)
+                {
+                    left = middle + 1;
+                }
+                else if (potentialmatch == target)
+                {
+                    return middle;
+                }
+            }          
+
+            return -1;
+        }
+
+        public static int ProductSum(List<object> array)
+        {
+            return ProductSumHelper(array, 1);
+        }
+
+        public static int ProductSumHelper(List<object> array, int multiplier)
+        {
+            if (array.Count == 0)
+            {
+                return 0;
+            }
+
+            int sum = 0;
+
+            foreach (var el in array)
+            {
+                if (el is IList<object>)
+                {
+                    sum += ProductSumHelper((List<object>)el, multiplier + 1);
+                }
+                else
+                {
+                    sum += (int)el;
+                }
+            }
+
+            return sum * multiplier;
+        }
+
+        public static int[] BubbleSort(int[] array)
+        {
+            if (array.Length == 0)
+            {
+                return new int[] { };
+            }
+
+            bool isSorted = false;
+            int counter = 0;
+
+            while (!isSorted)
+            {
+                isSorted = true;
+                for (int i = 0; i < array.Length - 1 - counter; i++)
+                {
+                    if (array[i] > array [i+1])
+                    {
+                        Swap(array, i, i + 1);
+                        isSorted = false;
+                    }                    
+                }
+                counter++;
+            }
+            return array;
+        }
+
+        public static int[] InsertionSort(int[] array)
+        {
+            if (array.Length == 0)
+            {
+                return new int[] { };
+            }
+
+            for (int i = 1; i < array.Length; i++)
+            {
+                int j = i;
+                while (j > 0 && array[j] < array[j-1])
+                {
+                    Swap(array, j, j - 1);
+                    j -= 1;
+                }
+
+            }
+            return array;
+        }
+
+        public static int[] SelectionSort(int[] array)
+        {
+            if (array.Length == 0)
+            {
+                return new int[] {};
+            }
+
+            int startIndex = 0;
+
+            while (startIndex < array.Length - 1)
+            {
+                int smallestIndex = startIndex;
+                for (int i = startIndex + 1; i < array.Length; i++)
+                {
+                    if (array[smallestIndex] > array[i])
+                    {
+                        smallestIndex = i;
+                    }
+                }
+
+                Swap(array, smallestIndex, startIndex);
+                startIndex++;
+            }
+           
+            return array;
+        }
         private static int[] Swap ( int[] input, int start, int end)
+        {
+            int temp = input[start];
+            input[start] = input[end];
+            input[end] = temp;
+            return input;
+        }
+
+        private static List<int> Swap(List<int> input, int start, int end)
         {
             int temp = input[start];
             input[start] = input[end];

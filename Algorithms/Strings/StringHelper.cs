@@ -81,6 +81,51 @@ namespace Algorithms.Strings
             return isPalindrome;
         }
 
+        public static bool BalancedBrackets(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return false;
+            }
+
+            bool isBalanced = true;
+            string startBrackets = "[{(";
+            Dictionary<char, char> matchingBrackets = new Dictionary<char, char>
+            {
+                { '(', ')' },
+                { '[', ']' },
+                { '{', '}' }
+            };
+            Stack<char> stack = new Stack<char>();
+
+            foreach (var item in str.ToCharArray())
+            {
+                if (startBrackets.Contains(item))
+                {
+                    stack.Push(item);                    
+                }
+                else
+                {
+                    if (stack.Count == 0)
+                    {
+                        return false;
+                    }
+
+                    char popedItem = stack.Pop();
+                    if (matchingBrackets[popedItem] != item)
+                    {
+                        return false;                      
+                    }                
+                }               
+
+            }
+
+            if (stack.Count != 0)
+            {
+               return  false;
+            }
+            return isBalanced;
+        }
         public static List<List<string>> GroupAnagrams(List<string> words)
         {
             Dictionary<string, List<string>> anagrams = new Dictionary<string, List<string>>();
