@@ -128,6 +128,10 @@ namespace Algorithms.Strings
         }
         public static List<List<string>> GroupAnagrams(List<string> words)
         {
+            if (words == null  || !words.Any())
+            {
+                return new List<List<string>>();
+            }
             Dictionary<string, List<string>> anagrams = new Dictionary<string, List<string>>();
 
             foreach (var word in words)
@@ -152,7 +156,7 @@ namespace Algorithms.Strings
         public static string CaesarCypherEncryptor(string str, int key)
         {
             int newKey = key % 26;
-            var charArray = new Char[str.Length];
+            var charArray = new char[str.Length];
 
             for (int i = 0; i < str.Length; i++)
             {
@@ -261,6 +265,130 @@ namespace Algorithms.Strings
             }
 
             return resultSum;
+        }
+
+        public static int LengthOfLongestSubstringLength(string s)
+        {
+            int start = 0;
+            int end = 0;
+            int maxLength = 0;
+
+            Dictionary<int,int> charMap = new Dictionary<int, int>();
+
+            while (end < s.Length)
+            {
+                if (!charMap.ContainsKey(s[end]))
+                {
+                    charMap.Add(s[end], end);
+                    end++;
+                    maxLength = Math.Max(maxLength, charMap.Count);
+                }
+                else
+                {
+                    charMap.Remove(s[start]);
+                    start++;
+                }
+                
+            }
+
+            return maxLength;
+        }
+
+        public static string LengthOfLongestSubstring(string s)
+        {
+            int start = 0;
+            int end = 0;
+            int[] longest = { 0, 1 };
+
+            Dictionary<int, int> charMap = new Dictionary<int, int>();
+
+            while (end < s.Length)
+            {
+                if (!charMap.ContainsKey(s[end]))
+                {
+                    charMap.Add(s[end], end);
+                    end++;
+                    if (end - start > longest[1] - longest[0])
+                    {
+                        longest = new int[] { start, end };
+                    }
+                }
+                else
+                {
+                    charMap.Remove(s[start]);
+                    start++;
+                }
+
+            }
+
+            return s.Substring(longest[0], longest[1] - longest[0]);
+        }
+
+        public static string LongestPalindrome(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s))
+            {
+                return s;
+            }
+            int[] currentLongest = new int[] { 0, 1 };
+
+            for (int i = 1; i < s.Length; i++)
+            {
+                int[] odd = GetLongestPlaindrome(s, i - 1, i+1);
+                int[] even = GetLongestPlaindrome(s, i - 1, i);
+                int[] longest = odd[1] - odd[0] > even[1] - even[0] ? odd : even;
+                currentLongest = currentLongest[1] - currentLongest[0] > longest[1] - longest[0] ? currentLongest : longest;
+
+            }
+
+            return s.Substring(currentLongest[0], currentLongest[1]- currentLongest[0]);
+        }
+
+        private static int[] GetLongestPlaindrome(string s, int start, int end)
+        {
+            while (start >=0 && end < s.Length)
+            {
+                if (s[start] != s[end])
+                {
+                    break;
+                }
+
+                start--;
+                end++;
+            }
+
+            return new int[] {start+1 , end };
+        }
+        public static bool UniqueStringMapping(string s1,string s2)
+        {
+            bool isUniqueChar = true;
+
+            if (string.IsNullOrEmpty(s1) || string.IsNullOrWhiteSpace(s2))
+            {
+                return false;
+            }
+
+            int counter = 0;
+            Dictionary<char, List<char>> stringMap = new Dictionary<char, List<char>>();
+
+            while (counter < s1.Length && counter < s2.Length)
+            {               
+                if (!stringMap.ContainsKey(s1[counter]))
+                {
+                    stringMap.Add(s1[counter], new List<char> { s2[counter] });
+                }
+                else
+                {
+                    var mappingList = stringMap[s1[counter]];
+
+                    if (!mappingList.Contains(s2[counter]))
+                    {
+                        return false;
+                    }
+                }
+                counter++;
+            }
+            return isUniqueChar;
         }
 
         /// <summary>

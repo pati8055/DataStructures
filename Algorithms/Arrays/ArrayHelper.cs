@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Schema;
 
 namespace Algorithms.Arrays
 {
@@ -14,15 +15,15 @@ namespace Algorithms.Arrays
             int left = 0;
             int right = array.Length - 1;
 
-            while(left < right)
+            while (left < right)
             {
                 int currentSum = array[left] + array[right];
 
-                if(currentSum == targetSum)
+                if (currentSum == targetSum)
                 {
                     return new int[] { array[left], array[right] };
                 }
-                else if ( currentSum > targetSum)
+                else if (currentSum > targetSum)
                 {
                     right--;
                 }
@@ -33,6 +34,36 @@ namespace Algorithms.Arrays
             }
 
             return new int[0];
+        }
+
+        public static int[] TwoNumberSumIndex(int[] nums, int target)
+        {
+            int[] result = new int[2];
+            if (nums == null || nums.Length == 0)
+            {
+                return result;
+            }           
+
+            Dictionary<int, int> map = new Dictionary<int, int>();
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                int potentialMatch = target - nums[i];
+                if (map.ContainsKey(potentialMatch))
+                {
+                    return new int[] { map[potentialMatch], i };                    
+                }
+                else
+                {
+                    if (map.ContainsKey(nums[i]))
+                    {
+                        continue;
+                    }
+                    map.Add(nums[i], i);
+                }   
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -99,9 +130,9 @@ namespace Algorithms.Arrays
                     {
                         right--;
                     }
-                }                
+                }
             }
-           
+
             return numberSum;
         }
 
@@ -122,7 +153,7 @@ namespace Algorithms.Arrays
         }
 
         public static int ReverseNumber(int x)
-        {           
+        {
             bool isNegativeNumber = false;
             if (x < 0)
             {
@@ -139,7 +170,7 @@ namespace Algorithms.Arrays
             {
                 return 0;
             }
-            return isNegativeNumber ? (int) (-1 * reverseNumber) :(int)reverseNumber;
+            return isNegativeNumber ? (int)(-1 * reverseNumber) : (int)reverseNumber;
         }
 
         public static bool IsPalindromeNumber(int x)
@@ -221,7 +252,7 @@ namespace Algorithms.Arrays
                     secondMax = max;
                     max = num;
                 }
-                else if( secondMax == null || num > secondMax)
+                else if (secondMax == null || num > secondMax)
                 {
                     thirdmax = secondMax;
                     secondMax = num;
@@ -256,7 +287,7 @@ namespace Algorithms.Arrays
 
             for (int i = 0; i < nums.Length; i++)
             {
-                if (leftSum == totalSum - nums[i]- leftSum)
+                if (leftSum == totalSum - nums[i] - leftSum)
                 {
                     return i;
                 }
@@ -349,12 +380,12 @@ namespace Algorithms.Arrays
 
             while (arrayIndex < array.Count && sequenceIndex < sequence.Count)
             {
-               if (array[arrayIndex] == sequence[sequenceIndex])
+                if (array[arrayIndex] == sequence[sequenceIndex])
                 {
-                   sequenceIndex++;
+                    sequenceIndex++;
                 }
                 arrayIndex++;
-                
+
             }
             return sequenceIndex == sequence.Count;
         }
@@ -380,7 +411,7 @@ namespace Algorithms.Arrays
                     currentDiff = secondnum - firstnum;
                     arrayOneIndex++;
                 }
-                else if(secondnum < firstnum)
+                else if (secondnum < firstnum)
                 {
                     currentDiff = firstnum - secondnum;
                     arrayTwoIndex++;
@@ -408,7 +439,7 @@ namespace Algorithms.Arrays
                 return new List<int>();
             }
             int start = 0;
-            int end = array.Count - 1;           
+            int end = array.Count - 1;
 
             while (start < end)
             {
@@ -436,30 +467,95 @@ namespace Algorithms.Arrays
             }
 
             int left = 0;
-            int right = array.Length -1;
+            int right = array.Length - 1;
 
             while (left <= right)
             {
                 int middle = (left + right) / 2;
 
                 int potentialmatch = array[middle];
-                if (potentialmatch > target)
-                {
-                    right = middle - 1;
-                }
-                else if (potentialmatch < target)
-                {
-                    left = middle + 1;
-                }
-                else if (potentialmatch == target)
+               
+                if (potentialmatch == target)
                 {
                     return middle;
                 }
-            }          
+                else if (target > potentialmatch)
+                {
+                    left = middle + 1;
+                }
+                else
+                {
+                    right = middle - 1;
+                }
+            }
 
             return -1;
         }
 
+        public static int SearchSortedShifted(int[] nums, int target)
+        {
+            if (nums == null || nums.Length == 0)
+            {
+                return -1;
+            }
+
+            //[4,5,6,7,0,1,2]
+            int startIndex = FindMiddleIndex(nums); //finds the minum element in Array
+
+            int left = 0;
+            int right = nums.Length - 1;
+
+            if (target >= nums[startIndex] && target <= nums[right])
+            {
+                left = startIndex;
+            }
+            else
+            {
+                right = startIndex;
+            }
+
+            while (left <= right)
+            {
+                int midpoint = (left + right) / 2;
+
+                if (target == nums[midpoint])
+                {
+                    return midpoint;
+                }
+                else if (target > nums[midpoint])
+                {
+                    left = midpoint + 1;
+                }
+                else
+                {
+                    right = midpoint - 1;
+                }
+            }
+
+            return -1;
+        }
+
+        private static int FindMiddleIndex(int[] nums)
+        {
+            int startIndex = 0;
+            int endIndex = nums.Length - 1;
+            
+            while (startIndex < endIndex)
+            {
+                int midIndex = (startIndex + endIndex) / 2;
+
+                if (nums[midIndex] > nums[endIndex])
+                {
+                    startIndex = midIndex + 1;
+                }
+                else
+                {
+                    endIndex = midIndex;
+                }
+           }
+
+            return startIndex;
+        }
         public static int ProductSum(List<object> array)
         {
             return ProductSumHelper(array, 1);
@@ -489,6 +585,71 @@ namespace Algorithms.Arrays
             return sum * multiplier;
         }
 
+        /// <summary>
+        /// maximum-subarray
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <returns></returns>
+        public static int KadanesAlgorithm(int[] nums)
+        {
+            int maxSumEndingHere = nums[0];
+            int maxSum = nums[0];
+
+            for (int i = 1; i < nums.Length; i++)
+            {
+                maxSumEndingHere = Math.Max(nums[i], maxSumEndingHere + nums[i]);
+                maxSum = Math.Max(maxSum, maxSumEndingHere);
+            }
+            return maxSum;
+        }
+
+        /// <summary>
+        /// best-time-to-buy-and-sell-stock
+        /// </summary>
+        /// <param name="prices"></param>
+        /// <returns></returns>
+        public static int MaxProfit(int[] prices)
+        {
+            int maxprofit = 0;
+            int minValue = int.MaxValue;
+
+            foreach (var price in prices)
+            {
+                if (price < minValue)
+                {
+                    minValue = price;
+                }
+                if (price - minValue > maxprofit)
+                {
+                    maxprofit = price - minValue;
+                }
+            }
+
+            return maxprofit;
+        }
+
+        public static int MaxSubsetSumNoAdjacent(int[] array)
+        {
+            if (array.Length == 0)
+            {
+                return 0;
+            }
+            if (array.Length == 1)
+            {
+                return array[0];
+            }
+
+            int[] maxSums = new int[array.Length];
+            maxSums[0] = array[0];
+            maxSums[1] = Math.Max(array[0], array[1]);
+
+            for (int i = 2; i < array.Length; i++)
+            {
+                maxSums[i] = Math.Max(maxSums[i - 1], maxSums[i - 2] + array[i]);
+            }
+            return maxSums[array.Length - 1];
+        }
+
         public static int[] BubbleSort(int[] array)
         {
             if (array.Length == 0)
@@ -504,11 +665,11 @@ namespace Algorithms.Arrays
                 isSorted = true;
                 for (int i = 0; i < array.Length - 1 - counter; i++)
                 {
-                    if (array[i] > array [i+1])
+                    if (array[i] > array[i + 1])
                     {
                         Swap(array, i, i + 1);
                         isSorted = false;
-                    }                    
+                    }
                 }
                 counter++;
             }
@@ -525,7 +686,7 @@ namespace Algorithms.Arrays
             for (int i = 1; i < array.Length; i++)
             {
                 int j = i;
-                while (j > 0 && array[j] < array[j-1])
+                while (j > 0 && array[j] < array[j - 1])
                 {
                     Swap(array, j, j - 1);
                     j -= 1;
@@ -539,7 +700,7 @@ namespace Algorithms.Arrays
         {
             if (array.Length == 0)
             {
-                return new int[] {};
+                return new int[] { };
             }
 
             int startIndex = 0;
@@ -558,10 +719,35 @@ namespace Algorithms.Arrays
                 Swap(array, smallestIndex, startIndex);
                 startIndex++;
             }
-           
+
             return array;
         }
-        private static int[] Swap ( int[] input, int start, int end)
+
+        #region Sliding Window Problems
+
+        public static int MinSubArrayLen(int s, int[] nums)
+        {
+            int minSumCount = int.MaxValue;
+            int start = 0;
+            int runningSum = 0;
+
+            for (int i = 0 ; i < nums.Length; i++)
+            {
+                runningSum += nums[i];
+
+                while (runningSum >= s)
+                {
+                    minSumCount = Math.Min(minSumCount, i + 1 - start);
+                    runningSum -= nums[start++];
+                }
+            }
+
+            return minSumCount == int.MaxValue ? 0 : minSumCount;
+        }
+
+        #endregion
+
+        private static int[] Swap(int[] input, int start, int end)
         {
             int temp = input[start];
             input[start] = input[end];
