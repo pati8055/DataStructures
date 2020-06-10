@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Schema;
@@ -194,8 +195,6 @@ namespace Algorithms.Arrays
             }
 
             // When the length is an odd number, we can get rid of the middle digit by revertedNumber/10
-            // For example when the input is 12321, at the end of the while loop we get x = 12, revertedNumber = 123,
-            // since the middle digit doesn't matter in palidrome(it will always equal to itself), we can simply get rid of it.
             return x == reversedNumber || x == reversedNumber / 10;
         }
 
@@ -721,6 +720,54 @@ namespace Algorithms.Arrays
             }
 
             return array;
+        }
+
+        public static int RemoveDuplicates(int[] nums)
+        {
+            int index = 1;
+
+            for (int i = 0; i < nums.Length - 1; i++)
+            {
+                if (nums[i] != nums[i + 1])
+                {
+                    nums[index] = nums[i + 1];
+                    index++;
+                }
+            }
+
+            return index;
+        }
+
+        public static void Merge(int[] nums1, int m, int[] nums2, int n)
+        {
+            int p1 = m - 1;
+            int p2 = n - 1;
+            int total = m + n - 1;
+
+            while (p1 >=0  && p2>=0)
+            {
+                nums1[total--] = nums1[p1] > nums2[p2] ? nums1[p1--] : nums2[p2--];
+            }
+
+            while (p2 >= 0)
+            {
+                nums1[total--] = nums2[p2--];
+            }
+        }
+
+        public static int RemoveElement(int[] nums, int val)
+        {
+            int index = 0;
+
+            for (int i = 0; i < nums.Length ; i++)
+            {
+                if (nums[i] != val)
+                {
+                    nums[index] = nums[i];
+                    index++;
+                }
+            }
+            return index;
         }
 
         #region Sliding Window Problems

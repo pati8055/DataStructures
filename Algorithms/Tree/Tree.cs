@@ -4,13 +4,13 @@ using System.Text;
 
 namespace Algorithms.BST
 {
-    public class BST
+    public class Tree
     {
         public int value;
-        public BST left;
-        public BST right;
+        public Tree left;
+        public Tree right;
 
-        public BST(int value)
+        public Tree(int value)
         {
             this.value = value;
             this.left = null;

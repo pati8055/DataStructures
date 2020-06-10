@@ -83,12 +83,6 @@ namespace Algorithms.Strings
 
         public static bool BalancedBrackets(string str)
         {
-            if (string.IsNullOrWhiteSpace(str))
-            {
-                return false;
-            }
-
-            bool isBalanced = true;
             string startBrackets = "[{(";
             Dictionary<char, char> matchingBrackets = new Dictionary<char, char>
             {
@@ -120,11 +114,7 @@ namespace Algorithms.Strings
 
             }
 
-            if (stack.Count != 0)
-            {
-               return  false;
-            }
-            return isBalanced;
+            return stack.Count == 0;
         }
         public static List<List<string>> GroupAnagrams(List<string> words)
         {
@@ -172,35 +162,20 @@ namespace Algorithms.Strings
         /// <param name="hayStack"></param>
         /// <param name="needle"></param>
         /// <returns></returns>
-        public static int FindSubstringIndex(string hayStack, string needle)
+        public static int FindSubstringIndex(string haystack, string needle)
         {
-            if (string.IsNullOrWhiteSpace(hayStack))
+
+            int hl = haystack.Length;
+            int nl = needle.Length;
+
+            if (hl < nl) return -1;
+            if (nl == 0) return 0;
+
+            for (int i = 0; i <= hl - nl; i++)
             {
-                return -1;
+                if (haystack.Substring(i, nl).Equals(needle))
+                    return i;
             }
-
-            for (int i = 0; i < hayStack.Length; i++)
-            {
-                if ( i + needle.Length > hayStack.Length)
-                {
-                    break;
-                }
-
-                for (int j = 0; j < needle.Length; j++)
-                {
-                    if (hayStack[i + j] != needle[j])
-                    {
-                        break;
-                    }
-
-                    if (j == needle.Length - 1)
-                    {
-                        return i;
-                    }
-                }
-
-            }
-
 
             return -1;
         }
