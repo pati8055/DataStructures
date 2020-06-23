@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -103,40 +106,51 @@ namespace Algorithms.Arrays
             return numberSum;
         }
 
-        public static List<int[]> ThreeNumberSum(int[] array, int targetSum)
+        public static List<IList<int>> ThreeNumberSum(int[] nums, int targetSum)
         {
-            Array.Sort(array);
-            List<int[]> numberSum = new List<int[]>();
+            Array.Sort(nums);
+            var numberSum = new List<IList<int>>();           
 
-            for (int i = 0; i < array.Length - 2; i++)
+            for (int i = 0; i < nums.Length - 2; i++)
             {
-                int left = i + 1;
-                int right = array.Length - 1;
-
-                while (left < right)
+                if (i == 0 || (i > 0 && nums[i] != nums[i - 1]))
                 {
-                    int currentSum = array[i] + array[left] + array[right];
+                    int left = i + 1;
+                    int right = nums.Length - 1;
 
-                    if (currentSum == targetSum)
+                    while (left < right)
                     {
-                        numberSum.Add(new int[] { array[i], array[left], array[right] });
-                        left++;
-                        right--;
-                    }
-                    else if (currentSum < targetSum)
-                    {
-                        left++;
-                    }
-                    else if (currentSum > targetSum)
-                    {
-                        right--;
+                        int currentSum = nums[i] + nums[left] + nums[right];
+
+                        if (currentSum == targetSum)
+                        {
+                            numberSum.Add(new List<int> { nums[i], nums[left], nums[right] });
+                            while (left < right && nums[left] == nums[left+1])
+                            {
+                                left++;
+                            }
+                            while (left < right && nums[right] == nums[right - 1])
+                            {
+                                right--;
+                            }
+                            left++;
+                            right--;
+                        }
+                        else if (currentSum < targetSum)
+                        {
+                            left++;
+                        }
+                        else if (currentSum > targetSum)
+                        {
+                            right--;
+                        }
                     }
                 }
             }
 
-            return numberSum;
+            return numberSum.ToList();
         }
-
+        
         public static int GetNthFib(int n)
         {
             int i = 1;
@@ -738,6 +752,152 @@ namespace Algorithms.Arrays
             return index;
         }
 
+        public static IList<int> FindDuplicates(int[] nums)
+        {
+            var result = new List<int>();
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                int index = Math.Abs(nums[i]) - 1;
+                if (nums[index] < 0)
+                {
+                    result.Add(index + 1);
+                }
+                nums[index] *= -1; //Mark as Visisted
+            }
+            return result;
+        }
+
+        public static int MissingNumber(int[] nums)
+        {
+            if (nums.Length == 0)
+            {
+                return -1;
+            }
+
+            int length = nums.Length;
+
+            int expected = (length * (length + 1)) / 2;
+            int actualSum = 0;
+
+            foreach (var num in nums)
+            {
+                actualSum += num;
+            }
+            return expected - actualSum;
+        }
+
+        public static int MissingNumberHashSet(int[] nums)
+        {
+            if (nums.Length == 0)
+            {
+                return -1;
+            }
+
+            HashSet<int> map = new HashSet<int>();
+
+            foreach (var num in nums)
+            {
+                map.Add(num);
+            }
+
+            int expected = nums.Length + 1;
+
+            for (int i = 0; i < expected; i++)
+            {
+                if (!map.Contains(i))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public static int FirstMissingPositive(int[] nums)
+        {
+
+            if (nums.Length == 0)
+            {
+                return 1;
+            }
+
+            HashSet<int> set = new HashSet<int>();
+            for (int i = 0; i < nums.Length; i++)
+            {
+                set.Add(nums[i]);
+            }
+
+            for (int i = 1; i < int.MaxValue; i++)
+            {
+                if (!set.Contains(i))
+                    return i;
+            }
+
+            return 1;
+        }
+
+        public static int[] SearchRange(int[] nums, int target)
+        {
+            var result = new int[2];
+            result[0] = FindStartingIndex(nums, target);
+            result[1] = FindEndingIndex(nums, target);
+
+            return result;
+        }
+
+        private static int FindStartingIndex(int[] nums, int target)
+        {
+            int index = -1;
+            int start = 0;
+            int end = nums.Length -1 ;
+
+            while (start <= end)
+            {
+                int mid = (start + end) / 2;
+                if (nums[mid] >= target)
+                {
+                    end = mid - 1;
+                }
+                else
+                {
+                    start = mid + 1;
+                }
+
+                if (nums[mid] == target)
+                {
+                    index = start;
+                    break;
+                }
+            }
+            return index;
+        }
+
+        private static int FindEndingIndex(int[] nums, int target)
+        {
+            int index = -1;
+            int start = 0;
+            int end = nums.Length - 1;
+
+            while (start <= end)
+            {
+                int mid = (start + end) / 2;
+                if (nums[mid] <= target)
+                {
+                    start = mid + 1;                    
+                }
+                else
+                {
+                    end = mid - 1;
+                }
+
+                if (nums[mid] == target)
+                {
+                    index = start;                   
+                }
+            }
+            return index;
+        }
+
         public static void Merge(int[] nums1, int m, int[] nums2, int n)
         {
             int p1 = m - 1;
@@ -770,7 +930,76 @@ namespace Algorithms.Arrays
             return index;
         }
 
-        #region Sliding Window Problems
+        #region 2D Arrays
+
+        public static int[][] Transpose(int[][] A)
+        {
+            if (A== null)
+            {
+                return new int[0][];
+            }
+            int rowLength = A.Length;
+            int columnLength = A[0].Length;
+            int[][] newMatrix = new int[columnLength][];
+
+            for (int i = 0; i < columnLength; i++)
+            {
+                newMatrix[i] = new int[rowLength];
+                for (int j = 0; j < rowLength; j++)
+                {                  
+                    newMatrix[i][j] = A[j][i];                  
+                }
+            }
+            return newMatrix;
+        }
+
+        public static void Rotate(int[][] matrix)
+        {
+            int length = matrix.Length;            
+
+            //Transpose
+            for (int i = 0; i < length; i++)
+            {
+                for (int j = i; j < length; j++)
+                {
+                    int temp = matrix[i][j];
+                    matrix[i][j] = matrix[j][i];
+                    matrix[j][i] = temp;
+                }
+            }
+
+            //swap
+            for (int i = 0; i < length; i++)
+            {
+                for (int j = 0; j < length/2; j++)
+                {
+                    int temp = matrix[i][j];
+                    matrix[i][j] = matrix[i][length -1 -j];
+                    matrix[i][length - 1 - j] = temp;
+                }
+            }
+        }
+
+        #endregion
+
+        public static int MaxArea(int[] height)
+        {
+            int maxarea = 0;
+            int left = 0; 
+            int right = height.Length - 1;
+            while (left < right)
+            {
+                int area = Math.Min(height[left], height[right]) * (right - left);
+                maxarea = Math.Max(maxarea, area);
+                if (height[left] < height[right])
+                    left++;
+                else
+                    right--;
+            }
+            return maxarea;
+        }
+
+       #region Sliding Window Problems
 
         public static int MinSubArrayLen(int s, int[] nums)
         {
@@ -792,6 +1021,67 @@ namespace Algorithms.Arrays
             return minSumCount == int.MaxValue ? 0 : minSumCount;
         }
 
+        #endregion
+
+        #region Dynamic Programming
+
+        public static bool CanJump(int[] nums)
+        {
+            if (nums.Length == 0)
+            {
+                return false;
+            }
+
+            int lastKnownPosition = nums.Length - 1;
+            for (int i = nums.Length - 2; i >= 0; i--)
+            {
+                if (i + nums[i] >= lastKnownPosition)
+                {
+                    lastKnownPosition = i;
+                }
+            }
+            return lastKnownPosition == 0;
+        }
+
+        public static int UniquePaths(int m, int n)
+        {
+            int[][] dp = new int[m][];
+            for (int i = 0; i < m; i++)
+                dp[i] = new int[n];
+
+            for (int i = 0; i < m; i++)
+                dp[i][0] = 1;
+
+            for (int i = 0; i < n; i++)
+                dp[0][i] = 1;
+
+            for (int i = 1; i < m; i++)
+            {
+                for (int j = 1; j < n; j++)
+                {
+                    dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+                }
+            }
+
+            return dp[m - 1][n - 1];
+        }
+
+        
+        //Like Fibinocci
+        public static int ClimbStairs(int n)
+        {
+            int[] dp = new int[n + 1];
+
+            dp[0] = 1;
+            dp[1] = 1;
+
+            for (int i = 2; i <= n; i++)
+            {
+                dp[i] = dp[i - 1] + dp[i - 2];
+            }
+
+            return dp[n];
+        }
         #endregion
 
         private static int[] Swap(int[] input, int start, int end)

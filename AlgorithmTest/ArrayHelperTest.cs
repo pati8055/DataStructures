@@ -34,7 +34,7 @@ namespace AlgorithmTest
         [TestMethod]
         public void ThreeNumberSumTest()
         {
-            var array = new int[] { 12, 3, 1, 2, -6, 5, -8, 6 };
+            var array = new int[] { 0,0,0 };
             var output = ArrayHelper.ThreeNumberSum(array, 0);
             Assert.IsNotNull(output);
         }
@@ -83,6 +83,15 @@ namespace AlgorithmTest
         {
             var array = new int[] { 1,3 };
             var output = ArrayHelper.SearchSortedShifted(array,3);
+            Assert.IsNotNull(output);
+        }
+
+        [TestMethod]
+        public void SearchRangeTest()
+        {
+            // 5, 7, 7, 8, 8, 10
+            var array = new int[] { 1 };
+            var output = ArrayHelper.SearchRange(array,0);
             Assert.IsNotNull(output);
         }
     }

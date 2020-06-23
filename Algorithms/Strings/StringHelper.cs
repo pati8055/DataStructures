@@ -116,13 +116,13 @@ namespace Algorithms.Strings
 
             return stack.Count == 0;
         }
-        public static List<List<string>> GroupAnagrams(List<string> words)
+        public static IList<IList<string>> GroupAnagrams(List<string> words)
         {
             if (words == null  || !words.Any())
             {
-                return new List<List<string>>();
+                return new List<IList<string>>();
             }
-            Dictionary<string, List<string>> anagrams = new Dictionary<string, List<string>>();
+            var anagrams = new Dictionary<string, IList<string>>();
 
             foreach (var word in words)
             {

@@ -84,6 +84,67 @@ namespace Algorithms.BST
 
             return IsSameTree(p.left,q.left) && IsSameTree(p.right, q.right);
         }
+
+        public bool IsSymmetric(Tree root)
+        {
+            return IsSymmetric(root, root);
+        }
+        private bool IsSymmetric(Tree root1,Tree root2)
+        {
+            if (root1 == null && root2 == null)
+            {
+                return true;
+            }
+
+            if (root1 == null || root2 == null)
+            {
+                return false;
+            }
+
+            return root1.value == root2.value && IsSymmetric(root1.left,root2.right)
+                && IsSymmetric(root1.right, root2.left);
+        }
+
+
+        public static int MaxDepth(Tree root)
+        {
+            if (root == null)
+            {
+                return 0;
+            }
+
+            int left = 1 + MaxDepth(root.left);
+            int right = 1 + MaxDepth(root.right);
+
+            return Math.Max(left, right);
+        }
+
+        public int MinDepth(Tree root)
+        {
+            if (root == null)
+            {
+                return 0;
+            }
+
+            if (root.right == null && root.left == null)
+            {
+                return 1;
+            }
+
+            // If left subtree is NULL, recur for right subtree  
+            if (root.left == null)
+            {
+                return MinDepth(root.right) + 1;
+            }
+
+            // If right subtree is NULL, recur for left subtree  
+            if (root.right == null)
+            {
+                return MinDepth(root.left) + 1;
+            }
+
+            return Math.Min(MinDepth(root.left), MinDepth(root.right)) + 1;
+        }
         public static int NodeDepths(BinaryTree root)
         {
             return NodeDepthHelper(root, 0);
