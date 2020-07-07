@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -13,6 +16,9 @@ namespace Algorithms.Arrays
 {
     public static class ArrayHelper
     {
+
+        #region 2 Numbers sum
+
         public static int[] TwoNumberSum(int[] array, int targetSum)
         {
             Array.Sort(array);
@@ -46,7 +52,7 @@ namespace Algorithms.Arrays
             if (nums == null || nums.Length == 0)
             {
                 return result;
-            }           
+            }
 
             Dictionary<int, int> map = new Dictionary<int, int>();
 
@@ -55,7 +61,7 @@ namespace Algorithms.Arrays
                 int potentialMatch = target - nums[i];
                 if (map.ContainsKey(potentialMatch))
                 {
-                    return new int[] { map[potentialMatch], i };                    
+                    return new int[] { map[potentialMatch], i };
                 }
                 else
                 {
@@ -64,7 +70,7 @@ namespace Algorithms.Arrays
                         continue;
                     }
                     map.Add(nums[i], i);
-                }   
+                }
             }
 
             return result;
@@ -106,6 +112,9 @@ namespace Algorithms.Arrays
             return numberSum;
         }
 
+        #endregion
+
+        //With out duplicates
         public static List<IList<int>> ThreeNumberSum(int[] nums, int targetSum)
         {
             Array.Sort(nums);
@@ -212,14 +221,73 @@ namespace Algorithms.Arrays
             return x == reversedNumber || x == reversedNumber / 10;
         }
 
+        public static int MySqrt(int x)
+        {
+            if (x < 2)
+            {
+                return x;
+            }
 
-        //TODO: This is work in Progress - Still have to find the solution
-        /// <summary>
-        /// Check for Increasing Array with One Change
-        /// </summary>
-        /// <param name="nums"></param>
-        /// <returns></returns>
-        public static bool CheckPossibility(int[] nums)
+            long start = 0;
+            long end = x/2;
+
+            while (start <= end)
+            {
+                long pivot = start + (end - start) / 2;
+                long squaredValue = pivot * pivot;
+                if (squaredValue == x)
+                {
+                    return (int)pivot;
+                }
+                else if(squaredValue > x)
+                {
+                    end = pivot-1;
+                }
+                else
+                {
+                    start = pivot+1;
+                }
+            }
+
+            return (int)end;
+        }
+
+        public static double MyPow(double x, int n)
+        {
+            long N = n;
+            if (N < 0)
+            {
+                x = 1 / x;
+                N = -N;
+            }
+
+            return MyPowHelper(x, N);
+        }
+
+        private static double MyPowHelper(double x, long n)
+        {
+            if (n == 0)
+            {
+                return 1.0;
+            }
+            double half = MyPowHelper(x, n / 2);
+            if (n % 2 == 0)
+            {
+                return half * half;
+            }
+            else
+            {
+                return x * half * half;
+            }
+        }
+
+            //TODO: This is work in Progress - Still have to find the solution
+            /// <summary>
+            /// Check for Increasing Array with One Change
+            /// </summary>
+            /// <param name="nums"></param>
+            /// <returns></returns>
+            public static bool CheckPossibility(int[] nums)
         {
             if (nums.Length == 1)
             {
@@ -641,6 +709,17 @@ namespace Algorithms.Arrays
             return maxprofit;
         }
 
+        public static int MaxProfit2(int[] prices)
+        {
+            int maxprofit = 0;
+            for (int i = 1; i < prices.Length; i++)
+            {
+                if (prices[i] > prices[i - 1])
+                    maxprofit += prices[i] - prices[i - 1];
+            }
+            return maxprofit;
+        }
+
         public static int MaxSubsetSumNoAdjacent(int[] array)
         {
             if (array.Length == 0)
@@ -853,7 +932,7 @@ namespace Algorithms.Arrays
 
             while (start <= end)
             {
-                int mid = (start + end) / 2;
+                int mid = start + (end-start) / 2;
                 if (nums[mid] >= target)
                 {
                     end = mid - 1;
@@ -865,8 +944,7 @@ namespace Algorithms.Arrays
 
                 if (nums[mid] == target)
                 {
-                    index = start;
-                    break;
+                    index = mid;                  
                 }
             }
             return index;
@@ -880,7 +958,7 @@ namespace Algorithms.Arrays
 
             while (start <= end)
             {
-                int mid = (start + end) / 2;
+                int mid = start + (end-start) / 2;
                 if (nums[mid] <= target)
                 {
                     start = mid + 1;                    
@@ -892,7 +970,7 @@ namespace Algorithms.Arrays
 
                 if (nums[mid] == target)
                 {
-                    index = start;                   
+                    index = mid;                   
                 }
             }
             return index;
@@ -913,6 +991,37 @@ namespace Algorithms.Arrays
             {
                 nums1[total--] = nums2[p2--];
             }
+        }
+
+        public static int[][] Merge(int[][] intervals)
+        {
+            int length = intervals.Length;
+            if (length <= 1)
+                return intervals;
+
+            int[] start = new int[length];
+            int[] end = new int[length];
+            for (int i = 0; i < length; i++)
+            {
+                start[i] = intervals[i][0];
+                end[i] = intervals[i][1];
+            }
+            Array.Sort(start);
+            Array.Sort(end);
+            int startIndex = 0;
+            int endIndex = 0;
+            List<int[]> result = new List<int[]>();
+            while (endIndex < length)
+            {
+                //as endIndex==length-1 is evaluated first, start[endIndex+1] will never hit out of index
+                if (endIndex == length - 1 || start[endIndex + 1] > end[endIndex])
+                {
+                    result.Add(new int[] { start[startIndex], end[endIndex] });
+                    startIndex = endIndex + 1;
+                }
+                endIndex++;
+            }
+            return result.ToArray();
         }
 
         public static int RemoveElement(int[] nums, int val)
@@ -980,6 +1089,145 @@ namespace Algorithms.Arrays
             }
         }
 
+        public static IList<int> SpiralOrder(int[][] matrix)
+        {
+            var result = new List<int>();
+
+            if (matrix.Length == 0)
+            {
+                return result;
+            }
+
+            int rowLength = matrix.Length - 1;
+            int columnLength = matrix[0].Length - 1;
+
+            int rs = 0, re = rowLength;
+            int cs = 0, ce = columnLength;
+
+            while (rs <= re && cs <= ce)
+            {
+                //Traverse Right
+                for (int i = cs; i <= ce; i++)
+                {
+                    result.Add(matrix[rs][i]);
+                }
+                rs++;
+                //Traverse Down
+                for (int i = rs; i <= re; i++)
+                {
+                    result.Add(matrix[i][ce]);
+                }
+                ce--;
+                //Traverse left
+                if (rs <= re)
+                {
+                    for (int i = ce; i>=cs; i--)
+                    {
+                        result.Add(matrix[re][i]);
+                    }
+                }
+                re--;
+                //TraverseRight
+                if (cs <=  ce)
+                {
+                    for (int i = re; i >= rs; i--)
+                    {
+                        result.Add(matrix[i][cs]);
+                    }
+                }
+                cs++;
+            }
+
+            return result;
+        }
+
+        public static int NumIslands(char[][] grid)
+        {
+            int numIslands = 0;
+
+            if (grid == null || grid.Length == 0)
+            {
+                return numIslands;
+            }
+
+            for (int i = 0; i < grid.Length; i++)
+            {
+                for (int j = 0; j < grid[i].Length; j++)
+                {
+                    if (grid[i][j] == '1')
+                    {
+                        numIslands += NumIslandHelper(grid, i, j);
+                    }                   
+                }
+            }
+
+            return numIslands;
+        }
+
+        private static int NumIslandHelper(char[][] grid, int i, int j)
+        {
+            if (i < 0 || i >= grid.Length || j < 0 || j >= grid[i].Length || grid[i][j] == '0')
+            {
+                return 0;
+            }
+
+            //Make Visited Isalnd's 0
+            grid[i][j] = '0';
+
+            //Traverse Up,Down,left,right
+            NumIslandHelper(grid, i - 1, j);
+            NumIslandHelper(grid, i + 1, j);
+            NumIslandHelper(grid, i, j+1);
+            NumIslandHelper(grid, i, j-1);
+
+            return 1; //Account for current Island
+        }
+
+        //word search
+        public static bool Exist(char[][] board, string word)
+        {
+            if (board== null || board.Length == 0)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < board.Length; i++)
+            {
+                for (int j = 0; j < board[i].Length; j++)
+                {
+                    if (board[i][j] == word[0] && WordSearchHelper(board,i, j,0,word))
+                    {
+                        return true;
+                    }
+                }
+
+            }
+            return false;
+        }
+
+        private static bool WordSearchHelper(char[][] board,int i, int j,int count,string word)
+        {
+            if (count == word.Length)
+            {
+                return true;
+            }
+
+            if (i < 0 || i >= board.Length || j < 0 || j >= board[i].Length || board[i][j] != word[count])
+            {
+                return false;
+            }
+
+            char temp = board[i][j];
+            board[i][j] = ' ';
+
+            bool isFound =    WordSearchHelper(board, i + 1, j, count + 1, word) ||
+                              WordSearchHelper(board, i - 1, j, count + 1, word) ||                            
+                            WordSearchHelper(board, i, j-1, count + 1, word) ||
+                            WordSearchHelper(board, i, j+1, count + 1, word);
+
+            board[i][j] = temp;
+            return isFound;
+        }
         #endregion
 
         public static int MaxArea(int[] height)
@@ -1023,8 +1271,7 @@ namespace Algorithms.Arrays
 
         #endregion
 
-        #region Dynamic Programming
-
+        //Greedy Approach
         public static bool CanJump(int[] nums)
         {
             if (nums.Length == 0)
@@ -1043,16 +1290,177 @@ namespace Algorithms.Arrays
             return lastKnownPosition == 0;
         }
 
+        #region Back Tracking      
+        //https://leetcode.com/problems/subsets/discuss/27281/A-general-approach-to-backtracking-questions-in-Java-(Subsets-Permutations-Combination-Sum-Palindrome-Partitioning)
+        public static IList<string> GenerateParenthesis(int n)
+        {
+            List<string> result = new List<string>();
+            generateParanthesisHelper(result, string.Empty, 0, 0, n);
+            return result;
+        }
+        private static void generateParanthesisHelper(List<string> result,
+                                         string currentString,int open,int close,int max)
+        {
+            if (currentString.Length == max * 2)
+            {
+                result.Add(currentString);
+                return;
+            }
+
+            if (open < max)
+            {
+                generateParanthesisHelper(result, currentString + "(", open + 1, close, max);
+            }
+
+            if (close < open)
+            {
+                generateParanthesisHelper(result, currentString + ")", open , close + 1, max);
+
+            }
+
+        }
+
+
+        public static IList<IList<int>> Subsets(int[] nums)
+        {
+            List<IList<int>> list = new List<IList<int>>();
+            Array.Sort(nums);
+            SubsetHelper(list, new List<int>(), nums, 0);
+            return list;
+        }
+        private static void SubsetHelper(List<IList<int>> list, List<int> tempList, int[] nums, int start)
+        {
+           list.Add(new List<int>(tempList));
+            for (int i = start; i < nums.Length; i++)
+            {
+                tempList.Add(nums[i]);
+                SubsetHelper(list, tempList, nums, i + 1);
+                tempList.RemoveAt(tempList.Count - 1);
+            }
+        }
+
+        public static List<IList<int>> SubsetsWithDup(int[] nums)
+        {
+            List<IList<int>> list = new List<IList<int>>();
+            Array.Sort(nums);
+            SubsetsWithDupHelper(list, new List<int>(), nums, 0);
+            return list;
+        }
+        private static void SubsetsWithDupHelper(List<IList<int>> list, List<int> tempList, int[] nums, int index)
+        {
+            list.Add(new List<int>(tempList));
+            for (int i = index; i < nums.Length; i++)
+            {
+                if (i > index && nums[i] == nums[i - 1]) continue; //Avoid Duplication
+
+                tempList.Add(nums[i]);
+                SubsetsWithDupHelper(list, tempList, nums, i + 1);
+                tempList.RemoveAt(tempList.Count - 1);
+
+            }
+        }
+
+        public static List<IList<int>> Permute(int[] nums)
+        {
+            List<IList<int>> list = new List<IList<int>>();
+            PermuteHelper(list, new List<int>(), nums);
+            return list;
+        }
+        private static void PermuteHelper(List<IList<int>> result,List<int> current,int[] nums)
+        {
+            if (current.Count == nums.Length)
+            {
+                result.Add(new List<int>(current));
+                return;
+            }
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (current.Contains(nums[i]))
+                {
+                    continue;
+                }
+                current.Add(nums[i]);
+                PermuteHelper(result, current, nums);
+                current.RemoveAt(current.Count - 1);
+            }
+        }
+
+
+        public static List<IList<int>> CombinationSum(int[] candidates, int target)
+        {
+            List<IList<int>> list = new List<IList<int>>();
+            Array.Sort(candidates);
+            CombinationSumHelper(list, new List<int>(), candidates, target, 0);
+            return list;
+        }
+        private static void CombinationSumHelper(List<IList<int>> result, List<int> current, int[] candidates, int target, int index)
+        {
+            if (target == 0)
+            {
+                result.Add(new List<int>(current));
+                return;
+            }
+            if (target < 0)
+            {
+                return;
+            }
+
+            for (int i = index; i < candidates.Length; i++)
+            {              
+                current.Add(candidates[i]);
+                CombinationSumHelper(result, current, candidates, target - candidates[i], i);// i  because we can reuse same elements
+                current.RemoveAt(current.Count - 1);
+            }
+        }
+
+
+        public static List<IList<int>> CombinationSum2(int[] candidates, int target)
+        {
+            List<IList<int>> list = new List<IList<int>>();
+            Array.Sort(candidates);
+            CombinationSum2Helper(list, new List<int>(), candidates, target,0);
+            return list;
+        }
+        private static void CombinationSum2Helper(List<IList<int>> result, List<int> current, int[] candidates, int target, int index)
+        {
+            if (target == 0)
+            {
+                result.Add(new List<int>(current));
+                return;
+            }
+            if (target < 0)
+            {
+                return;
+            }
+
+            for (int i = index; i < candidates.Length; i++)
+            {
+                if (i > index && candidates[i] == candidates[i - 1]) //No Duplicates
+                {
+                    continue;
+                }
+                current.Add(candidates[i]);
+                CombinationSum2Helper(result, current, candidates, target - candidates[i], i + 1);// i + 1 because we cann't reuse same elements
+                current.RemoveAt(current.Count - 1);
+            }
+
+        }
+     
+        #endregion
+
+        #region Dynamic Programming
+
         public static int UniquePaths(int m, int n)
         {
             int[][] dp = new int[m][];
             for (int i = 0; i < m; i++)
                 dp[i] = new int[n];
 
-            for (int i = 0; i < m; i++)
+            for (int i = 0; i < m; i++)//first column
                 dp[i][0] = 1;
 
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++) //First row
                 dp[0][i] = 1;
 
             for (int i = 1; i < m; i++)
@@ -1066,7 +1474,41 @@ namespace Algorithms.Arrays
             return dp[m - 1][n - 1];
         }
 
-        
+        public static int MinPathSum(int[][] grid)
+        {
+            if (grid == null || grid.Length == 0)
+            {
+                return 0;
+            }
+
+            int[][] dp = new int[grid.Length][];
+
+            for (int i = 0; i < grid.Length; i++)
+            {
+                dp[i] = new int[grid[i].Length];
+            }
+
+            for (int i = 0; i < dp.Length; i++)
+            {
+                for (int j = 0; j < dp[i].Length; j++)
+                {
+                    dp[i][j] += grid[i][j];
+                    if (i > 0 && j > 0)
+                    {
+                        dp[i][j] += Math.Min(dp[i - 1][j], dp[i][j - 1]);
+                    }
+                    else if (i > 0)
+                    {
+                        dp[i][j] += dp[i - 1][j];
+                    }
+                    else if (j > 0)
+                    {
+                        dp[i][j] += dp[i][j - 1];
+                    }
+                }
+            }
+            return dp[dp.Length -1][dp[0].Length-1];
+        }
         //Like Fibinocci
         public static int ClimbStairs(int n)
         {
@@ -1081,6 +1523,49 @@ namespace Algorithms.Arrays
             }
 
             return dp[n];
+        }
+
+
+        //Number of ways to make Change
+        public static int Change(int amount, int[] coins)
+        {
+            int[] ways = new int[amount + 1];
+            ways[0] = 1; //Nuber of ways to make 0 change is 1(i..e, don't do anything)
+           
+            foreach (int coin in coins)
+            {
+                for (int targetAmount = 1; targetAmount < amount + 1; targetAmount++)
+                {
+                    if (coin <= targetAmount)
+                    {
+                        ways[targetAmount] = ways[targetAmount] + ways[targetAmount - coin];
+                    }
+                }
+            }
+
+            return ways[amount];
+        }
+
+        //Minimum Change
+        public static int CoinChange(int[] coins, int amount)
+        {
+            int[] result = new int[amount + 1];
+            Array.Fill(result, int.MaxValue);
+
+            result[0] = 0; //Minimum change to makeup 0
+            foreach (var coin in coins)
+            {
+                for (int targetAmount = 1; targetAmount < amount + 1; targetAmount++)
+                {
+                    if (coin <= targetAmount)
+                    {
+                       int minValue =  result[targetAmount - coin] == int.MaxValue ? result[targetAmount - coin] : 1 + result[targetAmount - coin];
+                        result[targetAmount] = Math.Min(result[targetAmount], minValue);
+                    }
+                }
+            }
+
+            return result[amount] == int.MaxValue ? -1 : result[amount];
         }
         #endregion
 

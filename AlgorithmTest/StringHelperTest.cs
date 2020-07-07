@@ -71,5 +71,12 @@ namespace AlgorithmTest
             var output = StringHelper.LengthOfLongestSubstringLength("pwwkew");
             Assert.IsTrue(output > 0);
         }
+
+        [TestMethod]
+        public void LetterCombinationsTest()
+        {
+            var output = StringHelper.LetterCombinations("2");
+            Assert.IsTrue(output.Count > 0);
+        }
     }
 }

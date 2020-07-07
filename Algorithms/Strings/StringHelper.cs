@@ -334,6 +334,7 @@ namespace Algorithms.Strings
 
             return new int[] {start+1 , end };
         }
+
         public static bool UniqueStringMapping(string s1,string s2)
         {
             bool isUniqueChar = true;
@@ -366,6 +367,65 @@ namespace Algorithms.Strings
             return isUniqueChar;
         }
 
+        public static string LongestCommonPrefix(string[] strs)
+        {
+            if (strs.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            string prefix = strs[0];
+
+            for (int i = 1; i < strs.Length; i++)
+            {
+                while (strs[i].IndexOf(prefix) != 0)
+                {
+                    prefix = prefix.Substring(0, prefix.Length - 1);
+                }
+            }
+            return prefix;
+        }
+
+        //BFS
+        public static IList<string> LetterCombinations(string digits)
+        {
+            Queue<string> result = new Queue<string>();
+            if (digits.Length == 0)
+            {
+                return result.ToList();
+            }
+
+            result.Enqueue(string.Empty);
+
+            Dictionary<string, string> phone = new Dictionary<string, string>() {
+                { "2", "abc" },
+            {"3", "def"},
+            {"4", "ghi"},
+            {"5", "jkl"},
+            {"6", "mno" },
+            {"7", "pqrs" },
+            {"8", "tuv" },
+            { "9", "wxyz" } };
+
+            for (int i = 0; i < digits.Length; i++)
+            {
+                string permutation = phone.GetValueOrDefault(digits[i].ToString());
+                while (result.Peek().Length == i)
+                {
+                    string removedValue = result.Dequeue();
+                    foreach (char c in permutation.ToArray())
+                    {
+                        result.Enqueue(removedValue + c);
+                    }
+
+                }
+            }
+
+            return result.ToList();
+            
+        }
+    
+        
         /// <summary>
         /// a => 97
         /// z => 122

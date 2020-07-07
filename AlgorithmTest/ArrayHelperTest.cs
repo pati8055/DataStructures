@@ -94,5 +94,19 @@ namespace AlgorithmTest
             var output = ArrayHelper.SearchRange(array,0);
             Assert.IsNotNull(output);
         }
+
+        [TestMethod]
+        public void MyPowTest()
+        {
+            var output = ArrayHelper.MyPow(2.00000, 10);
+            Assert.IsNotNull(output);
+        }
+
+        [TestMethod]
+        public void SubsetsTest()
+        {
+            var output = ArrayHelper.Subsets(new int[] { 1,2,3});
+            Assert.IsNotNull(output);
+        }
     }
 }

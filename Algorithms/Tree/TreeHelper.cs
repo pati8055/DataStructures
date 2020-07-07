@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -101,10 +102,41 @@ namespace Algorithms.BST
                 return false;
             }
 
-            return root1.value == root2.value && IsSymmetric(root1.left,root2.right)
+            if (root1.value != root2.value)
+            {
+                return false;
+            }
+
+            return IsSymmetric(root1.left,root2.right)
                 && IsSymmetric(root1.right, root2.left);
         }
 
+
+        public static bool IsValidBST(Tree root)
+        {
+            return IsValidBSTHelper(root,null, null);
+
+        }
+        private static bool IsValidBSTHelper(Tree root,int? minVal,int? maxVal)
+        {
+            if (root == null)
+            {
+                return true;
+            }
+            int value = root.value;
+
+            if (minVal != null && value <= minVal)
+            {
+                return false;
+            }
+
+            if (maxVal != null && value >= maxVal)
+            {
+                return false;
+            }
+
+            return IsValidBSTHelper(root.right,value,maxVal) && IsValidBSTHelper(root.left,minVal,value);
+        }
 
         public static int MaxDepth(Tree root)
         {
@@ -117,7 +149,7 @@ namespace Algorithms.BST
             int right = 1 + MaxDepth(root.right);
 
             return Math.Max(left, right);
-        }
+        }              
 
         public int MinDepth(Tree root)
         {
@@ -161,6 +193,20 @@ namespace Algorithms.BST
 
         }
 
+        public static TreeNode InvertTree(TreeNode root)
+        {
+            if (root == null)
+            {
+                return null;
+            }
+            TreeNode right = InvertTree(root.right);
+            TreeNode left = InvertTree(root.left);
+
+            root.right = left;
+            root.left = right;
+            return root;
+        }
+
         #region Tree Traversals
 
         //Inorder (Left, Root, Right) 
@@ -186,48 +232,221 @@ namespace Algorithms.BST
         }
 
         //Preorder(Root, Left, Right) 
-        public IList<int> PreorderTraversal(Tree root)
-        {
-            List<int> result = new List<int>();
-            Stack<Tree> stack = new Stack<Tree>();
-            Tree current = root;
-
-            while (current != null || stack.Count > 0)
+        public IList<int> PreorderTraversal(TreeNode root)
+        {            
+            List<int> result =new List<int>();
+            if (root == null)
             {
-                while (current != null)
+                return result;
+            }
+
+            Stack<TreeNode> stack = new Stack<TreeNode>();
+            stack.Push(root);
+            while (stack.Count > 0)
+            {
+                TreeNode node = stack.Pop();
+                result.Add(node.val);
+                if (node.right != null)
                 {
-                    result.Add(current.value);
-                    stack.Push(current);
-                    current = current.left;
+                    stack.Push(node.right);
                 }
-                  current = stack.Pop();
-                  current = current.right;                
+                if (node.left != null)
+                {
+                    stack.Push(node.left);
+                }
             }
             return result;
         }
 
-        //Postorder (Left, Right, Root)
-        public List<int> PostorderTraversal(Tree root)
+        public static IList<IList<int>> LevelOrder(Tree root)
         {
-            List<int> result = new List<int>();
-            Stack<Tree> stack = new Stack<Tree>();
-            Tree current = root;
-
-            stack.Push(current);
-
-            while (current != null || stack.Count > 0)
-            {                
-                result.Add(current.value);
-                while (current != null)
-                {
-                    current = current.left;
-                }
-                current = stack.Pop();
-                current = current.right;
+            var result = new List<IList<int>>();
+            if (root == null)
+            {
+                return result;
             }
+            Queue<Tree> queue = new Queue<Tree>();
+            queue.Enqueue(root);
+            while (queue.Count > 0)
+            {
+                var level = new List<int>();
+                var count = queue.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    var peekValue = queue.Dequeue();
+                    level.Add(peekValue.value);
+                    if (peekValue.left != null)
+                    {
+                        queue.Enqueue(peekValue.left);
+                    }
+
+                    if (peekValue.right != null)
+                    {
+                        queue.Enqueue(peekValue.right);
+                    }
+                }
+
+                result.Add(level);
+            }
+
+            return result;
+        }
+
+        public static IList<IList<int>> ZigzagLevelOrder(Tree root)
+        {
+            var result = new List<IList<int>>();
+
+            if (root == null)
+            {
+                return result;
+            }
+
+            Queue<Tree> queue = new Queue<Tree>();
+            queue.Enqueue(root);
+            bool zigzag = false;
+            while (queue.Count > 0)
+            {
+                var level = new LinkedList<int>();
+                int count = queue.Count;
+
+                for (int i = 0; i < count; i++)
+                {
+                    var node = queue.Dequeue();
+
+                    if (zigzag)
+                    {
+                        level.AddFirst(node.value);
+                    }
+                    else
+                    {
+                        level.AddLast(node.value);
+                    }
+
+                    if (node.left != null)
+                    {
+                        queue.Enqueue(node.left);
+                    }
+
+                    if (node.right != null)
+                    {
+                        queue.Enqueue(node.right);
+                    }
+                }
+
+                result.Add(level.ToList());
+                zigzag = !zigzag;
+            }
+
             return result;
         }
         #endregion
 
+        #region Tree Construction
+        public static Tree SortedArrayToBST(int[] nums)
+        {
+            if (nums.Length == 0)
+            {
+                return null;
+            }
+
+            return ConstructBinaryTreeFromArray(nums, 0, nums.Length - 1);
+
+        }
+        private static Tree ConstructBinaryTreeFromArray(int[] nums,int left, int right)
+        {
+            if (left > right)
+            {
+                return null;
+            }
+            int midpoint = left + (right - left) / 2; //TO Avoid integer overflow
+            Tree root = new Tree(nums[midpoint]);
+            root.left = ConstructBinaryTreeFromArray(nums, left, midpoint - 1);
+            root.right = ConstructBinaryTreeFromArray(nums, midpoint + 1, right);
+            return root;
+        }
+
+        public static TreeNode BstFromPreorder(int[] preorder)
+        {
+            int[] inOrder = (int[])preorder.Clone();
+            Array.Sort(inOrder);
+            return BuildTreeHelper(0, 0, inOrder.Length - 1, preorder, inOrder);
+        }
+
+        public static TreeNode BuildTree(int[] preorder, int[] inorder)
+        {
+            return BuildTreeHelper(0, 0, inorder.Length - 1, preorder, inorder);
+        }
+        private static TreeNode BuildTreeHelper(int preStart,int inStart,int inEnd ,int[] preorder, int[] inorder)
+        {
+            if (preStart > preorder.Length -1 || inStart > inEnd)
+            {
+                return null;
+            }
+
+            TreeNode root = new TreeNode(preorder[preStart]);
+
+            int inIndex = 0;
+
+            for (int i = inStart; i <= inEnd; i++)
+            {
+                if (root.val == inorder[i])
+                {
+                    inIndex = i;
+                }
+            }
+
+            root.left = BuildTreeHelper(preStart + 1, inStart, inIndex - 1, preorder, inorder);
+            //(inIndex - inStart) is the size of root's left subtree.
+            root.right = BuildTreeHelper(preStart + (inIndex - inStart) + 1, inIndex + 1, inEnd, preorder, inorder);
+
+            return root;
+        }
+
+
+        public static string Tree2str(TreeNode t)
+        {
+            if (t ==  null)
+            {
+                return string.Empty;
+            }
+
+            Stack<TreeNode> stack = new Stack<TreeNode>();
+            HashSet<TreeNode> visited = new HashSet<TreeNode>();
+            var resultString = new StringBuilder();
+            stack.Push(t);
+            
+            while (stack.Count > 0)
+            {
+                var peekedValue = stack.Peek();
+
+                if (visited.Contains(peekedValue))
+                {
+                   stack.Pop();
+                   resultString.Append(")");
+                }
+                else
+                {
+                    visited.Add(peekedValue);
+                    resultString.Append("(" + peekedValue.val);
+                    if (peekedValue.right != null && peekedValue.left == null)
+                    {
+                        resultString.Append("()");
+                    }
+                    if (peekedValue.right != null)
+                    {
+                        stack.Push(peekedValue.right);
+                    }
+
+                    if (peekedValue.left != null)
+                    {
+                        stack.Push(peekedValue.left);
+                    }
+                }
+            }
+
+            return resultString.ToString().Substring(1, resultString.Length-1);
+        }
+
+        #endregion
     }
 }
