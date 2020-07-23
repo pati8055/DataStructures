@@ -281,13 +281,122 @@ namespace Algorithms.Arrays
             }
         }
 
-            //TODO: This is work in Progress - Still have to find the solution
-            /// <summary>
-            /// Check for Increasing Array with One Change
-            /// </summary>
-            /// <param name="nums"></param>
-            /// <returns></returns>
-            public static bool CheckPossibility(int[] nums)
+        //Monotonic : Has to be Either Descending or Ascending
+        public static bool IsMonotonic(int[] A)
+        {
+            bool isAscending = true;
+            bool isDescending = true;
+
+            for (int i = 0; i < A.Length-1; i++)
+            {
+                if (A[i] > A[i+1])
+                {
+                    isAscending = false;
+                }
+
+                if (A[i] < A[i+1])
+                {
+                    isDescending = false;
+                }
+            }
+            return isAscending || isDescending;
+
+        }
+
+        public static int[] ProductExceptSelf(int[] nums)
+        {
+            int length = nums.Length;
+           
+
+            int[] output = new int[length];
+
+            output[0] = 1;
+
+            for (int i = 1; i < length; i++)
+            {
+                output[i] = output[i - 1] * nums[i-1];
+            }
+
+            int sum = 1;
+            for (int i = length - 1; i >= 0; i--)
+            {
+                output[i] = sum * output[i];
+                sum *= nums[i];
+            }          
+
+            return output;
+        }
+
+        public static int SubarraySum(int[] nums, int k)
+        {
+            int runningSum = 0;
+            int sumCount = 0;
+            Dictionary<int, int> sumMapper = new Dictionary<int, int>();
+            sumMapper.Add(0, 1);
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                runningSum += nums[i];
+
+                if (sumMapper.ContainsKey(runningSum - k))
+                {
+                    //This is to account for same sum hapenning multiple times
+                    sumCount += sumMapper[runningSum - k]; 
+                }
+
+                if (!sumMapper.ContainsKey(runningSum))
+                {
+                    sumMapper.Add(runningSum, 1);
+                }
+                else
+                {
+                    sumMapper[runningSum] = sumMapper[runningSum] + 1;
+                }
+
+            }
+
+            return sumCount;
+        }
+
+        public static bool CheckSubarraySum(int[] nums, int k)
+        {
+            Dictionary<int, int> sumMapper = new Dictionary<int, int>();
+            sumMapper.Add(0, -1);
+
+            int runningsum = 0;
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                runningsum += nums[i];
+                if (k !=0)
+                {
+                    runningsum %= k;
+                }
+
+                if (sumMapper.ContainsKey(runningsum))
+                {
+                    int prev = sumMapper[runningsum];
+
+                    if (i - prev > 1 )
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    sumMapper.Add(runningsum, i);
+                }
+            }
+
+            return false;
+        }
+        //TODO: This is work in Progress - Still have to find the solution
+        /// <summary>
+        /// Check for Increasing Array with One Change
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <returns></returns>
+        public static bool CheckPossibility(int[] nums)
         {
             if (nums.Length == 1)
             {

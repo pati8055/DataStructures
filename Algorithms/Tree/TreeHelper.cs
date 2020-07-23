@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 
 namespace Algorithms.BST
@@ -11,23 +12,23 @@ namespace Algorithms.BST
     {
         public static int FindClosestValueInBst(Tree tree, int target)
         {
-            Tree currentNode = tree;
-            int closest = int.MaxValue;
+            Tree current = tree;
+            int closest = tree.value;
 
-            while (currentNode != null)
+            while (current != null)
             {
-                if (Math.Abs(target- closest) > Math.Abs(target - currentNode.value))
+                if (Math.Abs(target- closest) > Math.Abs(target - current.value))
                 {
-                    closest = currentNode.value;
+                    closest = current.value;
                 }
 
-                if (target > currentNode.value)
+                if (target > current.value)
                 {
-                    currentNode = currentNode.right;
+                    current = current.right;
                 }
-                else if(target < currentNode.value)
+                else if(target < current.value)
                 {
-                    currentNode = currentNode.left;
+                    current = current.left;
                 }
                 else
                 {
@@ -37,6 +38,75 @@ namespace Algorithms.BST
 
             return closest;
         }
+
+        public static int DiameterOfBinaryTree(TreeNode root)
+        {
+            if (root == null)
+            {
+                return 0;
+            }
+
+            /* get the height of left and right sub trees */
+            int lheight = HeightTree(root.left);
+            int rheight = HeightTree(root.right);
+
+            /* get the diameter of left and right subtrees */
+            int ldiameter = DiameterOfBinaryTree(root.left);
+            int rdiameter = DiameterOfBinaryTree(root.right);
+
+            /* Return max of following three 
+              1) Diameter of left subtree 
+             2) Diameter of right subtree 
+             3) Height of left subtree + height of right subtree*/
+            return Math.Max(lheight + rheight ,Math.Max(ldiameter, rdiameter));
+        }
+
+        private static int HeightTree(TreeNode root)
+        {
+            if (root == null)
+            {
+                return 0;
+            }
+
+            int leftHeight = HeightTree(root.left);
+            int rightHeight = HeightTree(root.right);
+
+            return (1 + Math.Max(leftHeight, rightHeight));
+        }
+
+        public static int RangeSumBST(TreeNode root, int L, int R)
+        {
+            int result = 0;
+
+            Stack<TreeNode> stack = new Stack<TreeNode>();
+            stack.Push(root);
+
+            while (stack.Count > 0)
+            {
+                TreeNode poppedItem = stack.Pop();
+
+                if (poppedItem != null)
+                {
+                    if (poppedItem.val >= L && poppedItem.val <= R)
+                    {
+                        result += poppedItem.val;
+                    }
+
+                    if (poppedItem.val > L)
+                    {
+                        stack.Push(poppedItem.left);
+                    }
+
+                    if (poppedItem.val < R)
+                    {
+                        stack.Push(poppedItem.right);
+                    }
+                }
+            }
+
+            return result;
+        }
+
 
         public static List<int> BranchSums(BinaryTree root)
         {

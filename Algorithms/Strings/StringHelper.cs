@@ -424,8 +424,172 @@ namespace Algorithms.Strings
             return result.ToList();
             
         }
-    
-        
+
+        public static int LongestValidParentheses(String s)
+        {
+            int maxLength = 0;
+            Stack<int> stack = new Stack<int>();
+            stack.Push(-1);
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] == '(')
+                {
+                    stack.Push(i);
+                }
+                else
+                {
+                    stack.Pop();
+
+                    if (stack.Count == 0)
+                    {
+                        stack.Push(i);
+                    }
+                    else
+                    {
+                        maxLength = Math.Max(maxLength, i - stack.Peek());
+                    }
+                }
+            }
+            return maxLength;
+        }
+
+        public static bool IsAlienSorted(string[] words, string order)
+        {
+            //Build a int Array - for Mapping
+            int[] charMap = new int[26];
+            for (int i = 0; i < order.Length; i++)
+            {
+                charMap[order[i] - 'a'] = i;
+            }
+
+            for (int i = 1; i < words.Length; i++)
+            {
+                if (AlienSortedHelper(words[i - 1], words[i], charMap) > 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static int AlienSortedHelper(string word1, string word2,int[] charMap)
+        {
+            int i = 0;
+            int j = 0;
+            int compareValue = 0;
+
+            while (i < word1.Length && j < word2.Length && compareValue == 0)
+            {
+                compareValue = charMap[word1[i] - 'a'] - charMap[word2[i] - 'a'];
+                i++;
+                j++;
+
+            }
+
+            if (compareValue == 0)
+            {
+                return word1.Length - word2.Length;
+            }
+
+            return compareValue;
+
+        }
+
+
+        public static string AddStrings(string num1, string num2)
+        {
+            StringBuilder result = new StringBuilder(); 
+
+            int p1 = num1.Length - 1;
+            int p2 = num2.Length - 1;
+            int carry = 0;            
+
+            while (p1 >= 0 || p2 >= 0)
+            {
+                int sum = carry;
+                if (p1 >= 0)
+                {
+                    sum += num1[p1--]-'0';
+                }
+
+                if (p2 >= 0)
+                {
+                    sum += num2[p2--]-'0';
+                }
+
+                result.Append(sum % 10);
+                carry = sum / 10;
+            }
+
+            if (carry !=0)
+            {
+                result.Append(carry);
+            }
+
+            return new string(result.ToString().Reverse().ToArray());
+        }
+
+        public static bool IsPalindrome2(string s)
+        {
+            s = s.ToLower();
+
+            int start = 0;
+            int end = s.Length - 1;
+
+            while (start < end)
+            {
+                while (start < end && !char.IsLetterOrDigit(s[start]))
+                {
+                    start++;
+                }
+
+                while (start < end && !char.IsLetterOrDigit(s[end]))
+                {
+                    end--;
+                }
+
+                if (s[start] != s[end])
+                {
+                    return false;
+                }
+                start++;
+                end--;
+            }
+
+            return true;
+        }
+
+        public static bool ValidPalindrome(string s)
+        {
+            int start = 0;
+            int end = s.Length - 1;
+            while (start < end)
+            {
+                if (s[start] != s[end])
+                {
+                    return IsPalindromeHelper(s, start + 1, end) || IsPalindromeHelper(s, start, end - 1);
+                }
+                start++;
+                end--;
+            }
+            return true;
+        }
+
+        public static bool IsPalindromeHelper(string str, int i, int j)
+        {
+            while (i < j)
+            {
+                if (str[i] != str[j])
+                {
+                    return false;
+                }
+                i++;
+                j--;
+            }
+            return true;
+        }
         /// <summary>
         /// a => 97
         /// z => 122

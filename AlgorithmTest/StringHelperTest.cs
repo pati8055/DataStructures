@@ -78,5 +78,12 @@ namespace AlgorithmTest
             var output = StringHelper.LetterCombinations("2");
             Assert.IsTrue(output.Count > 0);
         }
+
+        [TestMethod]
+        public void IsPalindrome2Test()
+        {
+            var output = StringHelper.IsPalindrome2("A man, a plan, a canal: Panama");
+            Assert.IsTrue(output);
+        }
     }
 }
