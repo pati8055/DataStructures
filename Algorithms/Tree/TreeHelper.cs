@@ -328,6 +328,44 @@ namespace Algorithms.BST
             return result;
         }
 
+        //Postorder(Left, Right, root) 
+        public IList<int> PostorderTraversal(TreeNode root)
+        {
+            List<int> result = new List<int>();
+            if (root == null)
+            {
+                return result;
+            }
+
+            Stack<TreeNode> stack1 = new Stack<TreeNode>();
+            Stack<TreeNode> stack2 = new Stack<TreeNode>();
+
+            stack1.Push(root);
+            while (stack1.Count > 0)
+            {
+                TreeNode node = stack1.Pop();
+
+                if (node.left != null) //This is key difference Left & Right
+                {
+                    stack1.Push(node.left);
+                }
+
+                if (node.right != null)
+                {
+                    stack1.Push(node.right);
+                }              
+
+                stack2.Push(node);
+            }
+
+            while (stack2.Count > 0)
+            {
+                TreeNode node = stack2.Pop();
+                result.Add(node.val);
+            }
+            return result;
+        }
+
         public static IList<IList<int>> LevelOrder(Tree root)
         {
             var result = new List<IList<int>>();

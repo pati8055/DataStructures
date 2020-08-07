@@ -85,5 +85,30 @@ namespace AlgorithmTest
             var output = StringHelper.IsPalindrome2("A man, a plan, a canal: Panama");
             Assert.IsTrue(output);
         }
+
+        [TestMethod]
+        public void MostCommonWordTest()
+        {
+            var output = StringHelper.MostCommonWord("Bob. hIt, baLl", new string[] { "bob", "hit" });
+            Assert.IsNotNull(output);
+        }
+
+        [TestMethod]
+        public void IsAnagramTest()
+        {
+            var output = StringHelper.IsAnagram("anagram", "nagaram");
+            Assert.IsNotNull(output);         
+            output = StringHelper.IsAnagram("aacc", "ccac");
+            Assert.IsNotNull(output);
+        }
+
+        [TestMethod]
+        public void IsAlienSortedTest()
+        {
+            var output = StringHelper.IsAlienSorted( new string[] { "hello", "leetcode" }, "hlabcdefgijkmnopqrstuvwxyz");
+            Assert.IsNotNull(output);
+          
+        }
+
     }
 }

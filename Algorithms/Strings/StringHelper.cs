@@ -2,21 +2,53 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Loader;
 using System.Text;
 
 namespace Algorithms.Strings
 {
     public static class StringHelper
     {
+
+        public static int FirstUniqChar(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s))
+            {
+                return -1;
+            }
+            Dictionary<char, int> charCount = new Dictionary<char, int>();
+
+            foreach (char c in s)
+            {
+                if (!charCount.ContainsKey(c))
+                {
+                    charCount.Add(c, 1);
+                }
+                else
+                {
+                    charCount[c] += 1; 
+                }
+            }
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (charCount[s[i]] == 1)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
         public static bool BuddyStrings(string A, string B)
         {
 
-            if(A.Length != B.Length)
+            if (A.Length != B.Length)
             {
                 return false;
             }
 
-            if(A.Equals(B))
+            if (A.Equals(B))
             {
                 HashSet<char> set = new HashSet<char>();
 
@@ -28,7 +60,7 @@ namespace Algorithms.Strings
                     }
                 }
 
-                if( set.Count < A.Length)
+                if (set.Count < A.Length)
                 {
                     return true;
                 }
@@ -48,7 +80,7 @@ namespace Algorithms.Strings
                 }
             }
 
-            if (diffs.Count == 2 && 
+            if (diffs.Count == 2 &&
                 A[diffs[0]] == B[diffs[1]] &&
                  A[diffs[1]] == B[diffs[0]])
             {
@@ -96,7 +128,7 @@ namespace Algorithms.Strings
             {
                 if (startBrackets.Contains(item))
                 {
-                    stack.Push(item);                    
+                    stack.Push(item);
                 }
                 else
                 {
@@ -108,9 +140,9 @@ namespace Algorithms.Strings
                     char popedItem = stack.Pop();
                     if (matchingBrackets[popedItem] != item)
                     {
-                        return false;                      
-                    }                
-                }               
+                        return false;
+                    }
+                }
 
             }
 
@@ -118,7 +150,7 @@ namespace Algorithms.Strings
         }
         public static IList<IList<string>> GroupAnagrams(List<string> words)
         {
-            if (words == null  || !words.Any())
+            if (words == null || !words.Any())
             {
                 return new List<IList<string>>();
             }
@@ -140,7 +172,53 @@ namespace Algorithms.Strings
                 }
             }
 
-           return (anagrams.Select(anagram => anagram.Value)).ToList();
+            return anagrams.Select(anagram => anagram.Value).ToList();
+        }
+
+        public static bool IsAnagram(string s, string t)
+        {
+            bool isAnagram = true;
+
+            if (s.Length != t.Length)
+            {
+                return false;
+            }
+            Dictionary<char,int> countMap = new Dictionary<char, int>();
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (!countMap.ContainsKey(s[i]))
+                {
+                    countMap.Add(s[i],1);
+                }
+                else
+                {
+                    countMap[s[i]] += 1;
+                }
+            }
+
+            for (int i = 0; i < t.Length; i++)
+            {
+                if (!countMap.ContainsKey(t[i]))
+                {
+                    isAnagram = false;
+                    break;
+                }
+                else
+                {
+                    countMap[t[i]] -= 1;
+                }
+            }
+
+            foreach (char c in countMap.Keys)
+            {
+                if (countMap[c] !=0)
+                {
+                    isAnagram = false;
+                    break;
+                }
+            }
+            return isAnagram;
         }
 
         public static string CaesarCypherEncryptor(string str, int key)
@@ -187,7 +265,7 @@ namespace Algorithms.Strings
                 return s;
             }
 
-            Dictionary<char,int> charCountMap = new Dictionary<char, int>();
+            Dictionary<char, int> charCountMap = new Dictionary<char, int>();
 
             foreach (var letter in s.ToCharArray())
             {
@@ -197,7 +275,7 @@ namespace Algorithms.Strings
                 }
                 else
                 {
-                    charCountMap.Add(letter,1);
+                    charCountMap.Add(letter, 1);
                 }
             }
 
@@ -218,7 +296,7 @@ namespace Algorithms.Strings
 
         public static int NumJewelsInStones(string J, string S)
         {
-            if(string.IsNullOrEmpty(J) || string.IsNullOrWhiteSpace(S))
+            if (string.IsNullOrEmpty(J) || string.IsNullOrWhiteSpace(S))
             {
                 return -1;
             }
@@ -235,8 +313,8 @@ namespace Algorithms.Strings
             {
                 if (jewelSet.Contains(S[i]))
                 {
-                    resultSum ++;
-                }               
+                    resultSum++;
+                }
             }
 
             return resultSum;
@@ -248,7 +326,7 @@ namespace Algorithms.Strings
             int end = 0;
             int maxLength = 0;
 
-            Dictionary<int,int> charMap = new Dictionary<int, int>();
+            Dictionary<int, int> charMap = new Dictionary<int, int>();
 
             while (end < s.Length)
             {
@@ -263,7 +341,7 @@ namespace Algorithms.Strings
                     charMap.Remove(s[start]);
                     start++;
                 }
-                
+
             }
 
             return maxLength;
@@ -309,19 +387,20 @@ namespace Algorithms.Strings
 
             for (int i = 1; i < s.Length; i++)
             {
-                int[] odd = GetLongestPlaindrome(s, i - 1, i+1);
-                int[] even = GetLongestPlaindrome(s, i - 1, i);
+                int[] odd = LongestPlaindromeHelper(s, i - 1, i + 1);
+                int[] even = LongestPlaindromeHelper(s, i - 1, i);
                 int[] longest = odd[1] - odd[0] > even[1] - even[0] ? odd : even;
                 currentLongest = currentLongest[1] - currentLongest[0] > longest[1] - longest[0] ? currentLongest : longest;
 
             }
 
-            return s.Substring(currentLongest[0], currentLongest[1]- currentLongest[0]);
+            return s.Substring(currentLongest[0], currentLongest[1] - currentLongest[0]);
         }
 
-        private static int[] GetLongestPlaindrome(string s, int start, int end)
+        //expandAroundCenter
+        private static int[] LongestPlaindromeHelper(string s, int start, int end)
         {
-            while (start >=0 && end < s.Length)
+            while (start >= 0 && end < s.Length)
             {
                 if (s[start] != s[end])
                 {
@@ -332,10 +411,10 @@ namespace Algorithms.Strings
                 end++;
             }
 
-            return new int[] {start+1 , end };
+            return new int[] { start + 1, end };
         }
 
-        public static bool UniqueStringMapping(string s1,string s2)
+        public static bool UniqueStringMapping(string s1, string s2)
         {
             bool isUniqueChar = true;
 
@@ -348,7 +427,7 @@ namespace Algorithms.Strings
             Dictionary<char, List<char>> stringMap = new Dictionary<char, List<char>>();
 
             while (counter < s1.Length && counter < s2.Length)
-            {               
+            {
                 if (!stringMap.ContainsKey(s1[counter]))
                 {
                     stringMap.Add(s1[counter], new List<char> { s2[counter] });
@@ -422,7 +501,7 @@ namespace Algorithms.Strings
             }
 
             return result.ToList();
-            
+
         }
 
         public static int LongestValidParentheses(String s)
@@ -455,80 +534,106 @@ namespace Algorithms.Strings
         }
 
         public static bool IsAlienSorted(string[] words, string order)
-        {
-            //Build a int Array - for Mapping
-            int[] charMap = new int[26];
+        {    
+            Dictionary<char, int> wordMap = new Dictionary<char, int>();
+
             for (int i = 0; i < order.Length; i++)
             {
-                charMap[order[i] - 'a'] = i;
+                wordMap.Add(order[i], i+1);
             }
-
-            for (int i = 1; i < words.Length; i++)
+       
+            for (int i = 0; i < words.Length - 1; i++)
             {
-                if (AlienSortedHelper(words[i - 1], words[i], charMap) > 0)
+                string word1 = words[i];
+                string word2 = words[i + 1];
+           
+                for (int k = 0; k < Math.Min(word1.Length, word2.Length); k++)
                 {
-                    return false;
+                    if (word1[k] != word2[k])
+                    {
+                        if (wordMap[word1[k]] > wordMap[word2[k]])// If they compare badly, it's not sorted.
+                        {
+                            return false;
+                        }
+                        goto OuterLoop;
+                    }
                 }
-            }
+
+                if (word1.Length > word2.Length)
+                    return false;
+                OuterLoop:
+                continue;
+            }          
 
             return true;
-        }
-
-        private static int AlienSortedHelper(string word1, string word2,int[] charMap)
-        {
-            int i = 0;
-            int j = 0;
-            int compareValue = 0;
-
-            while (i < word1.Length && j < word2.Length && compareValue == 0)
-            {
-                compareValue = charMap[word1[i] - 'a'] - charMap[word2[i] - 'a'];
-                i++;
-                j++;
-
-            }
-
-            if (compareValue == 0)
-            {
-                return word1.Length - word2.Length;
-            }
-
-            return compareValue;
-
         }
 
 
         public static string AddStrings(string num1, string num2)
         {
-            StringBuilder result = new StringBuilder(); 
+            StringBuilder result = new StringBuilder();
 
             int p1 = num1.Length - 1;
             int p2 = num2.Length - 1;
-            int carry = 0;            
+            int carry = 0;
 
             while (p1 >= 0 || p2 >= 0)
             {
                 int sum = carry;
                 if (p1 >= 0)
                 {
-                    sum += num1[p1--]-'0';
+                    sum += num1[p1--] - '0';
                 }
 
                 if (p2 >= 0)
                 {
-                    sum += num2[p2--]-'0';
+                    sum += num2[p2--] - '0';
                 }
 
                 result.Append(sum % 10);
                 carry = sum / 10;
             }
 
-            if (carry !=0)
+            if (carry != 0)
             {
                 result.Append(carry);
             }
 
             return new string(result.ToString().Reverse().ToArray());
+        }
+
+        public static string AddBinary(string a, string b)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            int i = a.Length - 1;
+            int j = b.Length - 1;
+            int carry = 0;
+            while (i >= 0 || j >= 0)
+            {
+                int sum = carry;
+
+                if (i >= 0)
+                {
+                    sum += a[i--] -'0';
+                }
+
+                if (j >= 0)
+                {
+                    sum += b[j--] - '0';
+                }
+
+                sb.Append(sum % 2); //Binary is base 2
+                carry = sum / 2;
+            }
+
+            if (carry > 0)
+            {
+                sb.Append(carry);
+            }
+            
+
+            return new string(sb.ToString().Reverse().ToArray());
         }
 
         public static bool IsPalindrome2(string s)
@@ -601,6 +706,104 @@ namespace Algorithms.Strings
         {
             int newLetterCode = letter + key;
             return newLetterCode <= 122 ? (char)newLetterCode : (char) (96 + newLetterCode % 122);
+        }
+
+        public static string[] reorderLogFiles(string[] logs)
+        {
+            Array.Sort(logs, (s1, s2)=> {
+                string[] split1 = s1.Split(" ",2); //splits in 2 positions
+                string[] split2 = s2.Split(" ", 2);
+
+                bool isDigit1 = char.IsDigit(split1[1][0]);
+                bool isDigit2 = char.IsDigit(split2[1][0]);
+
+                if (!isDigit1 && !isDigit2)
+                {
+                    // both letter-logs. 
+                    int comp = split1[1].CompareTo(split2[1]);
+                    if (comp == 0) return split1[0].CompareTo(split2[0]);
+                    else return comp;
+                }
+                return isDigit1 ? (isDigit2 ? 0 : 1) : -1;
+
+            });
+            return logs;
+        }
+
+        public static string MostCommonWord(string paragraph, string[] banned)
+        {            
+            //Split
+            string[] paragraphWords = paragraph.ToLower().Split(new char[] {' ', ',','!','?',';','.'});
+
+            //Compare and Count
+            Dictionary<string, int> wordCount = new Dictionary<string, int>();
+            foreach (var word in paragraphWords)
+            {
+                if (!banned.Contains(word) && !string.IsNullOrWhiteSpace(word))
+                {
+                    if (!wordCount.ContainsKey(word))
+                    {
+                        wordCount.Add(word,1);
+                    }
+                    else
+                    {
+                        wordCount[word]+= 1;
+                    }
+                }
+            }
+
+            var result = wordCount.OrderByDescending(w => w.Value).FirstOrDefault().Key;
+
+            return result;
+        }
+
+        public static List<string> TopKFrequent(string[] words, int k)
+        {
+            Dictionary<string, int> wordCount = new Dictionary<string, int>();
+
+            foreach (var word in words)
+            {
+                if (!wordCount.ContainsKey(word))
+                {
+                    wordCount.Add(word, 1);
+                }
+                else
+                {
+                    wordCount[word] += 1;
+                }
+            }
+
+            var result = wordCount.OrderByDescending(w => w.Value)
+                          .ThenBy(o => o.Key).Take(k).ToList();
+
+            return result.Select(s => s.Key).ToList();
+        }
+
+        public static string DefangIPaddr(string address)
+        {
+            if (string.IsNullOrWhiteSpace(address))
+            {
+                return address;
+            }
+
+            string[] ipNums = address.Split(".");
+
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < ipNums.Length ; i++)
+            {
+
+                if (i != ipNums.Length -1)
+                {
+                    sb.Append(ipNums[i] + "[.]");
+                }
+                else
+                {
+                    sb.Append(ipNums[i]);
+                }                
+            }           
+            
+            return sb.ToString();
         }
     }
 }

@@ -1,11 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Algorithms.LinkedList
 {
     public class LinkedListHelper
     {
+        public static Node ReverseList(Node head)
+        {
+            if (head == null)
+            {
+                return head;
+            }
+
+            Node prev = null;
+            Node current = head;
+
+            while (current != null)
+            {
+                Node nextTemp = current.next;
+                current.next = prev;
+                prev = current;
+                current = nextTemp;
+            }
+            return prev;
+        }
+
+        public static bool IsPalindrome(Node head)
+        {
+            if (head == null)
+            {
+                return false;
+            }
+
+            Node current = head;
+            List<int> values = new List<int>();
+            while (current != null)
+            {
+                values.Add(current.value);
+                current = current.next;
+            }
+
+            int start = 0;
+            int end = values.Count - 1;
+
+            while(start < end)
+            {
+                if (values[start] != values[end])
+                {
+                    return false;
+                }
+                start++;
+                end--;
+            }
+
+            return true;
+        }
         public static void RemoveKthNodeFromEnd(Node head, int k)
         {
             if (head == null || head.next == null)
@@ -127,8 +178,8 @@ namespace Algorithms.LinkedList
                 int val2 = l2 == null ? 0 : l2.value;
 
                 int sum = val1 + val2 + carry;
-                carry = sum / 10;
-                var newNode = new Node(sum % 10);
+                carry = sum / 10;// Division gives firstNumber number i..e, 13/10 => 1 
+                var newNode = new Node(sum % 10); // MOD gives last number i..e, 13%10 => 3
                 current.next = newNode;
                 current = current.next;
 

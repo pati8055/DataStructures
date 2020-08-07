@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Globalization;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml.Schema;
 
 namespace Algorithms.Arrays
 {
@@ -112,7 +103,67 @@ namespace Algorithms.Arrays
             return numberSum;
         }
 
+        public static int[] TwoSumSorted(int[] numbers, int target)
+        {
+            int[] result = new int[2] { -1, -1 };
+
+            if (numbers == null || numbers.Length == 0)
+            {
+                return result;
+            }
+
+            int start = 0;
+            int end = numbers.Length - 1;
+
+            while (start < end)
+            {
+                int potentialTarget = numbers[start] + numbers[end];
+                if (potentialTarget == target)
+                {
+                    return new int[] { start, end };
+                }
+                else if (potentialTarget < target)
+                {
+                    start++;
+                }
+                else if(potentialTarget > target)
+                {
+                    end--;
+                }
+            }
+
+            return result;
+        }
         #endregion
+
+        public static int CountPrimes(int n)
+        {
+            bool[] primes = new bool[n];
+            for (int i = 0; i < n; i++)
+            {
+                primes[i] = true;
+            }
+
+            for (int i = 2; i*i < primes.Length; i++)
+            {
+                for (int j = i; j*i < primes.Length; j++)
+                {
+                    primes[i * j] = false;
+                }
+            }
+
+            int primecount = 0;
+
+            for (int i = 0; i < primes.Length; i++)
+            {
+                if (primes[i])
+                {
+                    primecount++;
+                }
+            }
+            return primecount;
+        }
+
 
         //With out duplicates
         public static List<IList<int>> ThreeNumberSum(int[] nums, int targetSum)
@@ -303,6 +354,40 @@ namespace Algorithms.Arrays
 
         }
 
+        public static int Compress(char[] chars)
+        {
+            if (chars == null || chars.Length == 0)
+            {
+                return 0;
+            }
+
+            int index = 0;
+            int i = 0;
+
+            while (i < chars.Length)
+            {
+                int j = i;
+                while (j < chars.Length && chars[i] == chars[j])
+                {
+                    j++;
+                }
+
+                chars[index++] = chars[i]; //save charecter
+
+                if (j - i > 1)
+                {
+                    string count = j - i + "";
+
+                    foreach (char c in count) //Loop to account for double digits
+                    {
+                        chars[index++] = c;
+                    }
+                }
+
+                i = j;
+            }
+            return index;
+        }
         public static int[] ProductExceptSelf(int[] nums)
         {
             int length = nums.Length;
@@ -1003,7 +1088,6 @@ namespace Algorithms.Arrays
 
         public static int FirstMissingPositive(int[] nums)
         {
-
             if (nums.Length == 0)
             {
                 return 1;
@@ -1273,14 +1357,16 @@ namespace Algorithms.Arrays
             return numIslands;
         }
 
+        //DFS
         private static int NumIslandHelper(char[][] grid, int i, int j)
-        {
+        {            
+            //Boundaries check
             if (i < 0 || i >= grid.Length || j < 0 || j >= grid[i].Length || grid[i][j] == '0')
             {
                 return 0;
             }
 
-            //Make Visited Isalnd's 0
+            //Make Visited Isalnd's 0,so we don't want to revisit
             grid[i][j] = '0';
 
             //Traverse Up,Down,left,right
@@ -1290,6 +1376,64 @@ namespace Algorithms.Arrays
             NumIslandHelper(grid, i, j-1);
 
             return 1; //Account for current Island
+        }
+
+        public static int[][] FloodFill(int[][] image, int sr, int sc, int newColor)
+        {
+            if (image[sr][sc] == newColor)
+            {
+                return image;
+            }
+
+            FloodFillHelper(image, sr, sc, image[sr][sc], newColor);
+
+            return image;
+        }
+
+        //DFS
+        private static void FloodFillHelper(int[][] image, int i, int j, int currentColor, int newColor)
+        {
+            if (i < 0 || i >= image.Length || j < 0 || j >= image[i].Length || image[i][j] != currentColor)
+            {
+                return;
+            }
+
+            image[i][j] = newColor;
+            FloodFillHelper(image, i - 1, j, currentColor, newColor);
+            FloodFillHelper(image, i + 1, j, currentColor, newColor);
+            FloodFillHelper(image, i , j - 1, currentColor, newColor);
+            FloodFillHelper(image, i , j + 1, currentColor, newColor);
+
+        }
+
+        public static void WallsAndGates(int[][] rooms)
+        {
+            for (int i = 0; i < rooms.Length; i++)
+            {
+                for (int j = 0; j < rooms[i].Length; j++)
+                {
+                    if (rooms[i][j] == 0) //Gate in this example
+                    {
+                        WallsAndGatesHelper(rooms, i, j, 0);
+                    }
+                }
+            }
+        }
+
+        //DFS
+        private static void WallsAndGatesHelper (int[][] image, int i, int j, int count)
+        {
+
+            if (i < 0 || i >= image.Length || j < 0 || j >= image[i].Length|| image[i][j] < count)
+            {
+                return;
+            }
+
+            image[i][j] = count;
+            WallsAndGatesHelper(image, i - 1, j, count + 1);
+            WallsAndGatesHelper(image, i + 1, j, count + 1);
+            WallsAndGatesHelper(image, i, j-1, count + 1);
+            WallsAndGatesHelper(image, i, j + 1, count + 1);
         }
 
         //word search
@@ -1337,6 +1481,71 @@ namespace Algorithms.Arrays
             board[i][j] = temp;
             return isFound;
         }
+
+        //BFS
+        public static int OrangesRotting(int[][] grid)
+        {
+            HashSet<string> fresh = new HashSet<string>();
+            HashSet<string> rotten = new HashSet<string>();
+
+            for (int i = 0; i < grid.Length; i++)
+            {
+                for (int j = 0; j < grid[i].Length; j++)
+                {
+                    if (grid[i][j] == 1)
+                    {
+                        fresh.Add(""+i + j);
+                    }
+                    else if (grid[i][j] == 2)
+                    {
+                        rotten.Add("" + i + j);
+                    }
+                }
+            }
+
+            int minutes = 0;
+            int[][] directions = new int[4][];
+            directions[0] = new int[] { -1, 0 };
+            directions[1] = new int[] { 0, 1 };
+            directions[2] = new int[] { 1, 0 };
+            directions[3] = new int[] { 0, -1 };
+
+            while (fresh.Count > 0)
+            {
+                HashSet<string> infected = new HashSet<string>();
+
+                foreach (var s in rotten)
+                {
+                    int i = s[0] - '0';
+                    int j = s[1] - '0';
+
+                    foreach (var direction in directions)
+                    {
+                        int nextI = i + direction[0];
+                        int nextJ = j + direction[1];
+
+                        string target = "" + nextI + nextJ;
+
+                        if (fresh.Contains(target))
+                        {
+                            fresh.Remove(target);
+                            infected.Add(target);
+                        }
+                    }                              
+                }
+
+                if (infected.Count == 0)
+                {
+                    return -1;
+                }
+
+                rotten = infected;
+                minutes++;
+            }
+
+            return minutes;
+        }
+
         #endregion
 
         public static int MaxArea(int[] height)
@@ -1356,7 +1565,7 @@ namespace Algorithms.Arrays
             return maxarea;
         }
 
-       #region Sliding Window Problems
+        #region Sliding Window Problems
 
         public static int MinSubArrayLen(int s, int[] nums)
         {
@@ -1555,11 +1764,38 @@ namespace Algorithms.Arrays
             }
 
         }
-     
+
         #endregion
 
         #region Dynamic Programming
 
+        public static int Rob(int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
+            {
+                return 0;
+            }
+
+            if (nums.Length == 1)
+            {
+                return nums[0];
+            }
+
+            if (nums.Length == 2)
+            {
+                return Math.Max(nums[0],nums[1]);
+            }
+
+            int[] dp = new int[nums.Length];
+            dp[0] = nums[0];
+            dp[1] = Math.Max(nums[0],nums[1]);
+
+            for (int i = 2; i < dp.Length; i++)
+            {
+                dp[i] = Math.Max(nums[i] + dp[i - 2], dp[i - 1]);
+            }
+            return dp[nums.Length - 1];
+        }
         public static int UniquePaths(int m, int n)
         {
             int[][] dp = new int[m][];
@@ -1621,12 +1857,18 @@ namespace Algorithms.Arrays
         //Like Fibinocci
         public static int ClimbStairs(int n)
         {
+
+            if (n == 1)
+            {
+                return 1;
+            }
+
             int[] dp = new int[n + 1];
 
-            dp[0] = 1;
             dp[1] = 1;
+            dp[2] = 2;
 
-            for (int i = 2; i <= n; i++)
+            for (int i = 3; i <= n; i++)
             {
                 dp[i] = dp[i - 1] + dp[i - 2];
             }
@@ -1634,6 +1876,30 @@ namespace Algorithms.Arrays
             return dp[n];
         }
 
+        public static int NumDecodings(string s)
+        {
+            int length = s.Length;
+            int[] dp = new int[length + 1];
+            dp[0] = 1;
+            dp[1] = s[0] == '0' ? 0 : 1;
+
+            for (int i = 2; i <= length; i++)
+            {
+                int oneDigit = int.Parse(s.Substring(i-1 , 1));
+                int twoDigit = int.Parse(s.Substring(i-2, 2));
+
+                if (oneDigit >= 1 && oneDigit <= 9)
+                {
+                    dp[i] = dp[i] + dp[i - 1];
+                }
+
+                if (twoDigit >=10 && twoDigit <=26)
+                {
+                    dp[i] = dp[i] + dp[i - 2];
+                }
+            }
+            return dp[length];
+        }
 
         //Number of ways to make Change
         public static int Change(int amount, int[] coins)

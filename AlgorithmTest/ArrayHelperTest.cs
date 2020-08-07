@@ -108,5 +108,6 @@ namespace AlgorithmTest
             var output = ArrayHelper.Subsets(new int[] { 1,2,3});
             Assert.IsNotNull(output);
         }
+
     }
 }
