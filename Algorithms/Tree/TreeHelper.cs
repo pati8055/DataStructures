@@ -143,12 +143,7 @@ namespace Algorithms.BST
                 return true;
             }
             
-            if (p == null || q== null)
-            {
-                return false;
-            }
-
-            if (p.value != q.value)
+            if ((p == null || q== null) || p.value != q.value)
             {
                 return false;
             }
@@ -219,8 +214,39 @@ namespace Algorithms.BST
             int right = 1 + MaxDepth(root.right);
 
             return Math.Max(left, right);
-        }              
+        }
 
+        public static int MaxDepthIterative(TreeNode root)
+        {
+            Stack<TreeNode> stack = new Stack<TreeNode>();
+            Stack<int> depths = new Stack<int>();
+            stack.Push(root);
+            depths.Push(1);
+
+            int maxDepth = 0;
+            int currentDepth = 0;
+
+            while (stack.Count > 0)
+            {
+                TreeNode poppedElement = stack.Pop();
+                currentDepth = depths.Pop();
+                maxDepth = Math.Max(currentDepth, maxDepth);
+
+                if (poppedElement.right != null)
+                {
+                    stack.Push(poppedElement.right);
+                    depths.Push(1 + currentDepth);
+                }
+
+                if (poppedElement.left != null)
+                {
+                    stack.Push(poppedElement.left);
+                    depths.Push(1 + currentDepth);
+                }
+
+            }
+            return maxDepth;
+        }
         public int MinDepth(Tree root)
         {
             if (root == null)
@@ -246,6 +272,38 @@ namespace Algorithms.BST
             }
 
             return Math.Min(MinDepth(root.left), MinDepth(root.right)) + 1;
+        }
+
+        public static int MinDepthIterative(TreeNode root)
+        {
+            Stack<TreeNode> stack = new Stack<TreeNode>();
+            Stack<int> depths = new Stack<int>();
+            stack.Push(root);
+            depths.Push(1);
+
+            int minDepth = 0;
+            int currentDepth = 0;
+
+            while (stack.Count > 0)
+            {
+                TreeNode poppedElement = stack.Pop();
+                currentDepth = depths.Pop();
+                minDepth = Math.Min(currentDepth, minDepth);
+
+                if (poppedElement.right != null)
+                {
+                    stack.Push(poppedElement.right);
+                    depths.Push(1 + currentDepth);
+                }
+
+                if (poppedElement.left != null)
+                {
+                    stack.Push(poppedElement.left);
+                    depths.Push(1 + currentDepth);
+                }
+
+            }
+            return minDepth;
         }
         public static int NodeDepths(BinaryTree root)
         {

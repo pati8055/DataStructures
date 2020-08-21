@@ -109,5 +109,25 @@ namespace AlgorithmTest
             Assert.IsNotNull(output);
         }
 
+        [TestMethod]
+        public void ThreeSumClosestTest()
+        {
+            var output = ArrayHelper.ThreeSumClosest(new int[] { -1, 2, 1, -4 },1);
+            Assert.IsNotNull(output);
+        }
+
+        [TestMethod]
+        public void CanAttendMeetingsTest()
+        {
+            var testArray = new int[5][];
+            testArray[0] = new int[] {16,22};
+            testArray[1] = new int[] {28,45};
+            testArray[2] = new int[] {3,9};
+            testArray[3] = new int[] {46,50};
+            testArray[4] = new int[] {13,14};
+
+            var output = ArrayHelper.CanAttendMeetings(testArray);
+            Assert.IsNotNull(output);
+        }
     }
 }

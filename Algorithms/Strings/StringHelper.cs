@@ -9,7 +9,45 @@ namespace Algorithms.Strings
 {
     public static class StringHelper
     {
+        private static int Test(string S)
+        {
+            if (string.IsNullOrWhiteSpace(S))
+            {
+                return 0;
+            }
 
+            Dictionary<char, int> inputcharCount = new Dictionary<char, int>();
+
+            foreach (var c in S.ToCharArray())
+            {
+                if (inputcharCount.ContainsKey(c))
+                {
+                    inputcharCount[c] += 1;
+                }
+                else
+                {
+                    inputcharCount.Add(c, 1);
+                }
+            }
+
+            int passCount = 0;
+
+            while (inputcharCount['B'] > 0
+                && inputcharCount['A'] > 0
+                && inputcharCount['L'] > 1
+                && inputcharCount['O'] > 1
+                && inputcharCount['N'] > 0)
+            {
+                foreach (var c in "BALLOON".ToCharArray())
+                {
+                    inputcharCount[c] -= 1;
+                }
+
+                passCount++;
+            }
+
+            return passCount;
+        }
         public static int FirstUniqChar(string s)
         {
             if (string.IsNullOrWhiteSpace(s))
@@ -258,6 +296,31 @@ namespace Algorithms.Strings
             return -1;
         }
 
+        public static int StrStr(string haystack, string needle)
+        {
+            // empty needle appears everywhere, first appears at 0 index
+            if (needle.Length == 0)
+                return 0;
+            if (haystack.Length == 0)
+                return -1;
+
+            for (int i = 0; i < haystack.Length; i++)
+            {
+                // no enough places for needle after i
+                if (i + needle.Length > haystack.Length) 
+                    break;
+
+                for (int j = 0; j < needle.Length; j++)
+                {
+                    if (haystack[i + j] != needle[j])
+                        break;
+                    if (j == needle.Length - 1)
+                        return i;
+                }
+            }
+
+            return -1;
+        }
         public static string FrequencySort(string s)
         {
             if (string.IsNullOrWhiteSpace(s))
@@ -320,6 +383,8 @@ namespace Algorithms.Strings
             return resultSum;
         }
 
+        #region Sliding window
+        //return Length
         public static int LengthOfLongestSubstringLength(string s)
         {
             int start = 0;
@@ -347,6 +412,7 @@ namespace Algorithms.Strings
             return maxLength;
         }
 
+        //Return Actual word
         public static string LengthOfLongestSubstring(string s)
         {
             int start = 0;
@@ -376,6 +442,8 @@ namespace Algorithms.Strings
 
             return s.Substring(longest[0], longest[1] - longest[0]);
         }
+
+        #endregion
 
         public static string LongestPalindrome(string s)
         {

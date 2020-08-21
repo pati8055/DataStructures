@@ -164,7 +164,6 @@ namespace Algorithms.Arrays
             return primecount;
         }
 
-
         //With out duplicates
         public static List<IList<int>> ThreeNumberSum(int[] nums, int targetSum)
         {
@@ -210,7 +209,48 @@ namespace Algorithms.Arrays
 
             return numberSum.ToList();
         }
-        
+
+        public static int ThreeSumClosest(int[] nums, int target)
+        {
+            Array.Sort(nums);
+            int closestSum = 0;
+            int minDiff = int.MaxValue;
+
+            for (int i = 0; i < nums.Length - 2; i++)
+            {
+                int left = i + 1;
+                int right = nums.Length - 1;
+
+                while (left < right)
+                {
+                    int runningSum = nums[i] + nums[left] + nums[right];
+
+                    if (runningSum < target)
+                    {
+                        left++;
+                    }
+                    else if (runningSum > target)
+                    {
+                        right--;
+                    }
+                    else
+                    {
+                        return runningSum;
+                    }
+
+                    int diff = Math.Abs(runningSum - target);
+                    if (diff < minDiff)
+                    {
+                        minDiff = diff;
+                        closestSum = runningSum;
+                    }
+                }
+
+            }
+
+            return closestSum;
+        }
+
         public static int GetNthFib(int n)
         {
             int i = 1;
@@ -246,6 +286,30 @@ namespace Algorithms.Arrays
                 return 0;
             }
             return isNegativeNumber ? (int)(-1 * reverseNumber) : (int)reverseNumber;
+        }
+
+        public static int MyAtoi(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return 0;
+            }
+            int sign = 1;
+            int sum = 0;
+            int i = 0;
+            while (str[i] == ' ')
+                i++;
+            if (str[i] == '-' || str[i] == '+')
+                sign = str[i++] == '-' ? -1 : 1;
+            while (i < str.Length && str[i] >= '0' && str[i] <= '9')
+            {
+                if (sum > int.MaxValue / 10 || (sum == int.MaxValue / 10 && str[i] - '0' > 7))
+                {
+                    return (sign == 1) ? int.MaxValue : int.MinValue;
+                }
+                sum = 10 * sum + (str[i++] - '0');
+            }
+            return sum * sign;
         }
 
         public static bool IsPalindromeNumber(int x)
@@ -885,8 +949,12 @@ namespace Algorithms.Arrays
         /// <returns></returns>
         public static int MaxProfit(int[] prices)
         {
+            if (prices.Length == 0)
+            {
+                return 0;
+            }
             int maxprofit = 0;
-            int minValue = int.MaxValue;
+            int minValue = prices[0];
 
             foreach (var price in prices)
             {
@@ -894,9 +962,10 @@ namespace Algorithms.Arrays
                 {
                     minValue = price;
                 }
-                if (price - minValue > maxprofit)
+                int profit = price - minValue;
+                if (profit > maxprofit)
                 {
-                    maxprofit = price - minValue;
+                    maxprofit = profit;
                 }
             }
 
@@ -1011,18 +1080,22 @@ namespace Algorithms.Arrays
 
         public static int RemoveDuplicates(int[] nums)
         {
-            int index = 1;
-
-            for (int i = 0; i < nums.Length - 1; i++)
+            if (nums.Length == 0)
             {
-                if (nums[i] != nums[i + 1])
+                return 0;
+            }
+            int index = 0;
+
+            for (int i = 1; i < nums.Length; i++)
+            {
+                if (nums[i] != nums[index])
                 {
-                    nums[index] = nums[i + 1];
                     index++;
+                    nums[index] = nums[i];
                 }
             }
 
-            return index;
+            return index + 1;
         }
 
         public static IList<int> FindDuplicates(int[] nums)
@@ -1096,13 +1169,17 @@ namespace Algorithms.Arrays
             HashSet<int> set = new HashSet<int>();
             for (int i = 0; i < nums.Length; i++)
             {
+                if (set.Contains(nums[i]))
+                {
+                    continue;
+                }
                 set.Add(nums[i]);
             }
 
-            for (int i = 1; i < int.MaxValue; i++)
+            for (int minValue = 1; minValue < int.MaxValue; minValue++)
             {
-                if (!set.Contains(i))
-                    return i;
+                if (!set.Contains(minValue))
+                    return minValue;
             }
 
             return 1;
@@ -1231,6 +1308,43 @@ namespace Algorithms.Arrays
             }
             return index;
         }
+
+        #region Meeting Room
+
+        public static bool CanAttendMeetings(int[][] intervals)
+        {          
+
+            if (intervals == null || intervals.Length == 0)
+            {
+                return true;
+            }
+
+            int[] start = new int[intervals.Length];
+            int[] end = new int[intervals.Length];
+
+            for (int i = 0; i < intervals.Length; i++)
+            {
+                start[i] = intervals[i][0];
+            }
+
+            for (int i = 0; i < intervals.Length; i++)
+            {
+                end[i] = intervals[i][1];  
+            }
+
+            Array.Sort(start);
+            Array.Sort(end);
+
+            for (int i = 1; i < intervals.Length; i++)
+            {
+                if (start[i] < end[i - 1])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        #endregion
 
         #region 2D Arrays
 
@@ -1924,26 +2038,66 @@ namespace Algorithms.Arrays
         //Minimum Change
         public static int CoinChange(int[] coins, int amount)
         {
-            int[] result = new int[amount + 1];
-            Array.Fill(result, int.MaxValue);
-
-            result[0] = 0; //Minimum change to makeup 0
-            foreach (var coin in coins)
+            int max = amount + 1;
+            int[] dp = new int[amount + 1];
+            Array.Fill(dp, max);
+            dp[0] = 0;
+            for (int i = 1; i <= amount; i++)
             {
-                for (int targetAmount = 1; targetAmount < amount + 1; targetAmount++)
+                for (int j = 0; j < coins.Length; j++)
                 {
-                    if (coin <= targetAmount)
+                    if (coins[j] <= i)
                     {
-                       int minValue =  result[targetAmount - coin] == int.MaxValue ? result[targetAmount - coin] : 1 + result[targetAmount - coin];
-                        result[targetAmount] = Math.Min(result[targetAmount], minValue);
+                        dp[i] = Math.Min(dp[i], dp[i - coins[j]] + 1);
                     }
                 }
             }
-
-            return result[amount] == int.MaxValue ? -1 : result[amount];
+            return dp[amount] > amount ? -1 : dp[amount];
         }
         #endregion
 
+        public static int MinEatingSpeed(int[] piles, int H)
+        {
+            if (piles.Length == 0)
+            {
+                return 0;
+            }
+
+            int low = 1;
+            int high = piles.Max();
+
+            while (low <= high)
+            {
+                int mid = low + (high - low) / 2;
+
+                if (CanEatBannana(piles, H, mid))
+                {
+                    high = mid - 1;
+                }
+                else
+                {
+                    low = mid + 1;
+                }
+            }
+
+            return low;
+        }
+
+        private static bool CanEatBannana(int[] piles, int H, int k)
+        {
+            int hours = 0;
+            foreach (var pile in piles)
+            {
+                int div = pile / k;
+                hours += div;
+                if (pile % k != 0) //Check for extra hour 
+                {
+                    hours++;
+                }
+            }
+
+            return hours <= H; //hours should be lessthan eual to H
+        }
         private static int[] Swap(int[] input, int start, int end)
         {
             int temp = input[start];
